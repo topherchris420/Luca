@@ -1,0 +1,128 @@
+{
+    "alerts": {
+        "PROTO-01": {
+            "title": "{} komunikácia smeruje mimo lokálnej siete do {}.",
+            "description": "Protokol {} sa bežne používa v interných sieťach. Skontrolujte, či hostiteľ {} nevygeneroval iné upozornenia, ktoré môžu naznačovať škodlivé správanie."
+        },
+        "PROTO-02": {
+            "title": "{} pripojenie k {} cez port väčší alebo rovný {}.",
+            "description": "Zistili sa {} pripojenia k {} na porte {}. Použitie neštandardného portu je niekedy vodítkom pre škodlivú aktivitu. Odporúčame vám skontrolovať reputáciu tohto hostiteľa pomocou vyhľadania na internete."
+        },
+        "PROTO-03": {
+            "title": "Komunikácia HTTP bola uskutočnená s hostiteľom {}",
+            "description": "Vaše zariadenie komunikovalo s hostiteľom {} pomocou nešifrovaného protokolu HTTP. Aj keď toto správanie nie je samo o sebe škodlivé, nie je bežné, aby aplikácie smartfónu spustené na pozadí vytvárali komunikáciu HTTP. Skontrolujte reputáciu hostiteľa pomocou vyhľadania na internete."
+        },
+        "PROTO-04": {
+            "title": "S hostiteľom {} sa komunikovalo cez HTTP cez neštandardný port ({}).",
+            "description": "Vaše zariadenie komunikovalo s hostiteľom {} cez port {} pomocou nešifrovaného protokolu HTTP. Toto správanie je dosť nezvyčajné. Overte si reputáciu hostiteľa pomocou vyhľadania na internete."
+        },
+        "PROTO-05": {
+            "title": "Server {} nebol vyriešený v požiadavke DNS počas relácie.",
+            "description": "To znamená, že server {} pravdepodobne nie je riešený žiadnym názvom domény alebo toto rozlíšenie už zariadenie uložilo do vyrovnávacej pamäte. Ak sa hostiteľ zobrazuje v iných upozorneniach, skontrolujte ho."
+        },
+        "IOC-01": {
+            "title": "Bolo vytvorené pripojenie k {} ({}), ktoré je označené ako {}.",
+            "description": "Hostiteľ {} bol explicitne zaradený na čiernu listinu kvôli škodlivej aktivite. Vaše zariadenie je pravdepodobne napadnuté a vyžaduje ďalšie preskúmanie odborníkmi na bezpečnosť IT."
+        },
+        "IOC-02": {
+            "title": "Komunikácia s {} v rámci CIDR {}, ktorý je označený ako {}.",
+            "description": "Server {} je hosťovaný v sieti známej škodlivou aktivitou. Aj keď toto správanie nie je vo svojej podstate škodlivé, mali by ste skontrolovať, či sa o tomto hostiteľovi nezmieňujú iné upozornenia. Ak máte pochybnosti, vyhľadajte tohto hostiteľa na internete, aby ste zistili, či je legitímny."
+        },
+        "IOC-03": {
+            "title": "DNS požiadavka bola vytvorená pre {}, ktorý je označený ako {}.",
+            "description": "Názov domény {} v zázname bol výslovne označený ako škodlivý. To znamená, že vaše zariadenie je pravdepodobne napadnuté a je potrebné ho ďalej preskúmať."
+        },
+        "IOC-04": {
+            "title": "DNS požiadavka bola vytvorená pre {}, ktorý je označený ako {}.",
+            "description": "Názov domény {} zobrazený v zázname bol explicitne označený ako tracker. Znamená to, že jedna z aktívnych aplikácií geograficky sleduje Vašu polohu."
+        },
+        "IOC-05": {
+            "title": "DNS požiadavka bola vytvorená pre doménu {} pomocou bezplatnej služby DNS.",
+            "description": "Názov domény {} používa bezplatnú službu DNS. Služby tohto typu často využívajú pri svojich operáciách počítačoví zločinci alebo útočníci podporovaní vládou. Je veľmi podozrivé, že aplikácia spustená na pozadí používa takúto službu. Preskúmajte to podrobnejšie."
+        },
+        "IOC-06": {
+            "title": "Bola vykonaná DNS požiadavka pre doménu {} obsahujúca podozrivú TLD.",
+            "description": "Názov domény {} používa podozrivú doménu najvyššej úrovne ({}). Aj keď nie je sama o sebe škodlivá, túto negenerickú TLD bežne používajú kyberzločinci a vládami sponzorované operácie. Overte túto doménu pomocou vyhľadania na internete. Ak je tento hostiteľ spomenutý v iných upozorneniach, považujte to za veľmi podozrivé."
+        },
+        "IOC-07": {
+            "title": "Certifikát priradený k {} aktivitám sa našiel v komunikácii s {}.",
+            "description": "Certifikát ({}) priradený k {} bol explicitne označený ako škodlivý. Znamená to, že vaše zariadenie je pravdepodobne napadnuté a potrebuje forenznú analýzu."
+        },
+        "IOC-08": {
+            "title": "Na {} bola odoslaná požiadavka HTTP, ktorá je označená ako {}.",
+            "description": "Názov domény {} zobrazený v zázname bol výslovne označený ako škodlivý. To znamená, že Vaše zariadenie je pravdepodobne napadnuté a vyžaduje si dôkladnú analýzu."
+        },
+        "IOC-09": {
+            "title": "Do domény {} bola uskutočnená požiadavka HTTP pomocou bezplatnej služby DNS.",
+            "description": "Názov domény {} používa bezplatnú službu DNS. Služby tohto typu často využívajú pri svojich operáciách počítačoví zločinci alebo útočníci podporovaní vládou. Je veľmi podozrivé, že aplikácia spustená na pozadí používa takúto službu. Preskúmajte to podrobnejšie."
+        },
+        "IOC-10": {
+            "title": "Do domény {}, ktorá obsahuje podozrivú TLD, bola odoslaná požiadavka HTTP.",
+            "description": "Názov domény {} používa podozrivú doménu najvyššej úrovne ({}). Túto negenerickú TLD, hoci sama o sebe nie je škodlivá, bežne používajú počítačoví zločinci a pri operáciách sponzorovaných vládou. Overte túto doménu pomocou vyhľadania na internete. Ak je tento hostiteľ uvedený v iných upozorneniach, považujte to za veľmi podozrivé."
+        },
+        "ACT-01": {
+            "title": "Doména {} používa podozrivý názvový server ({}).",
+            "description": "Názov domény {} používa názvový server, ktorý je explicitne spojený so škodlivou aktivitou. Mnoho kyberzločincov a štátom podporovaných útočníkov používa registrátorov tohto typu, pretože umožňujú použiť kryptomeny a anonymné platby. Odporúča sa ďalej skúmať túto doménu a súvisiacu spustenú aplikáciu pomocou forenznej analýzy telefónu."
+        },
+        "ACT-02": {
+            "title": "Doména {} bola vytvorená nedávno (pred {} dňami).",
+            "description": "Názov domény {} je nový. Aj keď to nie je vo svojej podstate škodlivé, útočníci často vytvoria novú infraštruktúru pre každú kampaň, čo môže viesť k použitiu novo registrovaných doménových mien."
+        },
+        "SSL-01": {
+            "title": "SSL pripojenie na neštandardnom porte ({}) k {}",
+            "description": "Je nezvyčajné, aby smartfóny vytvárali pripojenia SSL cez neštandardný port. Môže to byť legitímne, ale aj tak odporúčame skontrolovať reputáciu {}. Pozrite sa na jeho záznam WHOIS, súvisiaci autonómny systém, dátum jeho vytvorenia a vyhľadajte ho na internete."
+        },
+        "SSL-02": {
+            "title": "SSL pripojenie k {} používa bezplatný certifikát.",
+            "description": "Bezplatné certifikáty – ako napr Let's Encrypt – sú bežne používané príkazovými a riadiacimi servermi spojenými so škodlivými implantátmi a phishingovými webovými stránkami. Odporúčame overiť hostiteľa spojeného s týmto certifikátom. Pozrite sa na názov domény a dátum vytvorenia alebo si overte reputáciu hostiteľa na internete."
+        },
+        "SSL-03": {
+            "title": "Certifikát priradený k {} je podpísaný sám sebou.",
+            "description": "Používanie certifikátov s vlastným podpisom je v infraštruktúre útočníka rozšírené. Odporúčame skontrolovať hostiteľa {} priradeného k tomuto certifikátu. Ak to chcete urobiť, pozrite sa na názov jeho domény (ak ho má), záznam WHOIS, dátum vytvorenia a skontrolujte reputáciu hostiteľa na internete."
+        },
+        "SSL-04": {
+            "title": "Certifikát obsahuje názov domény {}, kategorizovaný ako {}",
+            "description": "Jeden z vymenených certifikátov obsahuje názov domény {}. Tento názov domény bol výslovne klasifikovaný ako škodlivý. Vaše zariadenie je určite napadnuté a malo by byť ďalej zanalyzované profesionálnym tímom."
+        },
+        "ADV-01": {
+            "title": "Skontrolujte upozornenia pre {}",
+            "description": "Skontrolujte prosím reputáciu hostiteľa {}, Zdá sa, že je to škodlivé, pretože to počas relácie vygenerovalo {} upozornení."
+        },
+        "SNORT-01": {
+            "title": "Spustilo sa pravidlo Suricata: {}",
+            "description": "Spustilo sa pravidlo zisťovania siete. Je pravdepodobné, že Vaše zariadenie bolo ohrozené alebo vykazuje podozrivé správanie."
+        }
+    },
+    "report": {
+        "numbers": [
+            "jednu",
+            "dva",
+            "tri",
+            "štyri",
+            "päť",
+            "šesť",
+            "sedem",
+            "osem",
+            "deväť"
+        ],
+        "suspect_title": "Podozrivá komunikácia",
+        "uncat_title": "Nekategorizovaná komunikácia",
+        "whitelist_title": "Komunikácia na bielej listine",
+        "protocol": "Protokol",
+        "domain": "Doména",
+        "dst_ip": "Dst IP adresa",
+        "dst_port": "Dst číslo portu",
+        "device_name": "Názov zariadenia",
+        "device_mac": "MAC adresa zariadenia",
+        "report_generated_on": "Report vygenerovaný",
+        "capture_duration": "Trvanie záznamu",
+        "packets_number": "Počet paketov",
+        "capture_sha1": "Záznam SHA1",
+        "report_for_the_capture": "Report pre záznam",
+        "report_footer": "Tento prehľad bol automaticky vygenerovaný zariadením Tinycheck. V prípade akýchkoľvek otázok, hlásení chýb alebo spätnej väzby nás kontaktujte na tinycheck@kaspersky.com.",
+        "high_msg": "Vaše zariadenie je napadnuté a máte {} kritické/ú výstrahy/u.",
+        "moderate_msg": "Máte {} mierne/u výstrahy/u, Vaše zariadenie môže byť napadnuté. Pozrite si ich pozorne.",
+        "low_msg": "Máte iba {} nízke/u výstrahy/u, neváhajte ich skontrolovať.",
+        "none_msg": "Všetko vyzerá dobre, žiadne upozornenia. Neváhajte a skontrolujte nekategorizovanú komunikáciu, ak existuje."
+    }
+}

@@ -1,0 +1,93 @@
+{
+  "home": {
+    "welcome_msg": "欢迎使用 Luca.",
+    "kicker": "私人网络检查",
+    "help_msg": "我们将帮助您检查您的设备。",
+    "start_btn": "开始！"
+  },
+  "analysis": {
+    "question": "您是否希望对被捕获的通信进行分析？",
+    "no_btn": "不，只保存数据",
+    "yes_btn": "好的！",
+    "please_wait_msg": "请耐心等待分析结果...",
+    "some_time_msg": "是的，这需要花点时间..."
+  },
+  "capture": {
+    "intercept_coms_msg": "正在截获通信： ",
+    "stop_btn": "停止捕获"
+  },
+  "generate-ap": {
+    "network_name": "网络名称",
+    "network_password": "网络密码",
+    "tap_msg": "点击白色帧，创建新网络",
+    "generate_ap_msg": "我们刚刚为您创建了新的临时网络。",
+    "error_msg1": "很不幸的是，我们在 <br /> 创建网络AP的过程中遇到了问题。",
+    "error_msg2": "请确认您的设备上有两个Wi-FI网卡， <br /> 并重启设备以重试。",
+    "restart_btn": "重启设备"
+  },
+  "report": {
+    "show_full_report": "显示完整报告",
+    "start_new_capture": "开始新的捕获",
+    "save_capture": "保存捕获",
+    "numbers": [
+      "零",
+      "一",
+      "二",
+      "三",
+      "四",
+      "五",
+      "六",
+      "七",
+      "八",
+      "九",
+      "十",
+      "十一"
+    ],
+    "stalkerware_msg": "您的设备已被跟踪软件 <br /> 入侵，请检查完整报告.",
+    "location_msg": "一个应用程序正在将您的<br /> 实时地理位置信息分享给第三方。",
+    "fine_msg": "一切正常，没有警报。",
+    "high_msg": "您有 {nb} 条高级警报，<br /> 看起来您的设备已被入侵。",
+    "moderate_msg": "您有 {nb} 条中级警报， <br /> 您的设备有可能已被入侵。",
+    "low_msg": "您只有 {nb} 条低级警报，<br /> 请检查它们。",
+    "save_report": "保存报告",
+    "report_of": "报告设备名：",
+    "ip_address": "IP 地址：",
+    "mac_address": "MAC 地址：",
+    "pcap_sha1": "SHA1 ：",
+    "capture_started": "捕获开始时间：",
+    "capture_ended": "捕获结束时间：",
+    "high": "高",
+    "moderate": "中",
+    "low": "低"
+  },
+  "wifi-select": {
+    "already_connected_question": "您似乎已经连接了一个Wi-Fi网络。<br /> 您希望使用当前的连接吗？",
+    "no_btn": "不，使用其他连接",
+    "yes_btn": "是的，使用此连接。",
+    "wifi_name": "Wi-Fi 名称",
+    "refresh_btn": "刷新网络列表",
+    "not_connected": "您似乎没有连接至互联网。",
+    "please_config": "请配置 Wi-Fi 连接。",
+    "lets_do_btn": "好的，开始配置",
+    "no_internet": "离线使用",
+    "wifi_connected": "Wi-Fi 已连接",
+    "wifi_not_connected": "Wi-Fi 未连接，请重试。",
+    "tap_keyboard": "点击虚拟键盘开始",
+    "wifi_password": "Wi-Fi 密码",
+    "connect_to_it": "连接此网络"
+  },
+  "save-capture": {
+    "please_connect": "请连接U盘以保存捕获。",
+    "we_are_saving": "我们正在保存您的捕获。",
+    "tap_msg": "您可以点击U盘以开始新的捕获。",
+    "capture_download": "即将开始保存捕获数据...",
+    "start_capture_btn": "开始进行新的捕获"
+  },
+  "update": {
+    "luca_needs": "Luca 需要更新到新版本",
+    "please_click": "请点击此按钮进行更新。",
+    "the_process": "此过程需要花几分钟，请耐心等待...",
+    "update_finished": "更新已完成，需要刷新界面...",
+    "update_it": "现在更新"
+  }
+}

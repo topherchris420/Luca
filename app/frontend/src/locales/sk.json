@@ -1,0 +1,93 @@
+{
+  "home": {
+    "welcome_msg": "Vitajte v Luca.",
+    "kicker": "KONTROLA SÚKROMNEJ SIETE",
+    "help_msg": "Pomôžeme Vám skontrolovať Vaše zariadenie.",
+    "start_btn": "Poďme nato!"
+  },
+  "analysis": {
+    "question": "Chcete analyzovať zachytenú komunikáciu?",
+    "no_btn": "Nie, iba ju uložiť",
+    "yes_btn": "Áno, poďme na to",
+    "please_wait_msg": "Počkajte prosím, prebieha analýza...",
+    "some_time_msg": "Áno, môže to chvíľu trvať..."
+  },
+  "capture": {
+    "intercept_coms_msg": "Zaznamenávanie komunikácie z/zo ",
+    "stop_btn": "Zastaviť záznam"
+  },
+  "generate-ap": {
+    "network_name": "Názov siete",
+    "network_password": "Sieťové heslo",
+    "tap_msg": "Ťuknutím na biely rám vytvoríte novú sieť.",
+    "generate_ap_msg": "Generujeme pre Vás pominuteľnú sieť.",
+    "error_msg1": "Bohužiaľ, máme nejaké problémy <br />počas tvorby AP.",
+    "error_msg2": "Overte si, či máte v zariadení dve rozhrania WiFi<br /> a skúste to znova reštartovať",
+    "restart_btn": "Reštart zariadenia"
+  },
+  "report": {
+    "show_full_report": "Zobraziť celú správu",
+    "start_new_capture": "Spustiť nový záznam",
+    "save_capture": "Uložiť záznam",
+    "numbers": [
+      "nula",
+      "jednu",
+      "dva",
+      "tri",
+      "štyri",
+      "päť",
+      "šesť",
+      "sedem",
+      "osem",
+      "deväť",
+      "desať",
+      "jedenásť"
+    ],
+    "stalkerware_msg": "Vaše zariadenie je ohrozené<br /> stalkerwarom. Prosím, skontrolujte správu.",
+    "location_msg": "Aplikácia zdieľa Vašu<br /> súčasnú polohu s treťou stranou.",
+    "fine_msg": "Všetko vyzerá dobre, žiadne výstrahy.",
+    "high_msg": "Máte {nb} kritické/ú výstrahy/u.<br />Zdá sa, že Vaše zariadenie je ohrozené.",
+    "moderate_msg": "Máte {nb} mierne/u výstrahy/u,<br />Vaše zariadenie môže byť ohrozené.",
+    "low_msg": "Máte iba {nb} nízke/u výstrahy/u,<br /> neváhajte ich skontrolovať.",
+    "save_report": "Uložiť report",
+    "report_of": "Report z/zo",
+    "ip_address": "IP adresa:",
+    "mac_address": "MAC adresa:",
+    "pcap_sha1": "SHA1:",
+    "capture_started": "Záznam začal:",
+    "capture_ended": "Záznam skončil:",
+    "high": "vysoký",
+    "moderate": "mierny",
+    "low": "nízky"
+  },
+  "wifi-select": {
+    "already_connected_question": "Zdá sa, že ste už pripojený k sieti.<br />Chcete použiť aktuálne pripojenie?",
+    "no_btn": "Nie, použi inú",
+    "yes_btn": "Áno, použite ju.",
+    "wifi_name": "Názov Wi-Fi",
+    "refresh_btn": "Obnoviť zoznam sieti",
+    "not_connected": "Zdá sa, že nie ste pripojený na internet.",
+    "please_config": "Prosím nakonfigurujte Wi-Fi pripojenie.",
+    "lets_do_btn": "Ok, poďme na to.",
+    "no_internet": "Použiť offline",
+    "wifi_connected": "Wi-Fi pripojená",
+    "wifi_not_connected": "Wi-Fi nie je pripojené. Prosím, zopakujte to znova.",
+    "tap_keyboard": "Ťuknutím na virtuálnu klávesnicu môžete začať",
+    "wifi_password": "Heslo Wi-Fi",
+    "connect_to_it": "Pripojiť"
+  },
+  "save-capture": {
+    "please_connect": "Prosím pripojte USB kľúč, aby ste si uložili záznam.",
+    "we_are_saving": "Ukladáme záznam.",
+    "tap_msg": "Môžete ťuknúť na USB kľúč, ak chcete spustiť nový záznam.",
+    "capture_download": "Sťahovanie záznamu sa spúšťa...",
+    "start_capture_btn": "Spustiť ďalší záznam"
+  },
+  "update": {
+    "luca_needs": "Luca je potrebné aktualizovať na ďalšiu verziu",
+    "please_click": "Kliknite na tlačidlo nižšie a aktualizujte ho.",
+    "the_process": "Proces môže trvať niekoľko minút, prosím čakajte...",
+    "update_finished": "Aktualizácia dokončená, poďme obnoviť rozhranie...",
+    "update_it": "Aktualizovať teraz"
+  }
+}
