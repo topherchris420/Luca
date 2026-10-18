@@ -51,6 +51,7 @@ def watch_iocs():
                     to_delete = content.get("to_delete", [])
                 except (OSError, ValueError, requests.RequestException):
                     w["status"] = False
+                    continue
 
                 w["status"] = True
                 for ioc in iocs_list:
@@ -104,6 +105,7 @@ def watch_whitelists():
                     to_delete = content.get("to_delete", [])
                 except (OSError, ValueError, requests.RequestException):
                     w["status"] = False
+                    continue
 
                 w["status"] = True
                 for elem in elements:
