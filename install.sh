@@ -49,7 +49,7 @@ set_userlang() {
     read lang
 
     if [[ " ${LOCALES[@]} " =~ " ${lang} " ]]; then
-        sed -i "s/userlang/${lang}/g" /usr/share/tinycheck/config.yaml
+        sed -i "s/userlang/${lang}/g" /usr/share/luca/config.yaml
         echo -e "\e[92m    [✔] User language settled!\e[39m"
     else
         echo -e "\e[91m    [✘] You must choose between the languages proposed, let's retry.\e[39m"
@@ -60,9 +60,9 @@ set_userlang() {
 set_credentials() {
     # Set the credentials to access to the backend.
     echo -e "\e[39m[+] Setting the backend credentials...\e[39m"
-    echo -n "    Please choose a username for TinyCheck's backend: "
+    echo -n "    Please choose a username for Luca's backend: "
     read login
-    echo -n "    Please choose a password for TinyCheck's backend: "
+    echo -n "    Please choose a password for Luca's backend: "
     read -s password1
     echo ""
     echo -n "    Please confirm the password: "
@@ -71,8 +71,8 @@ set_credentials() {
 
     if [ "$password1" == "$password2" ]; then
         password=$(echo -n "$password1" | sha256sum | cut -d" " -f1)
-        sed -i "s/userlogin/$login/g" /usr/share/tinycheck/config.yaml
-        sed -i "s/userpassword/$password/g" /usr/share/tinycheck/config.yaml
+        sed -i "s/userlogin/$login/g" /usr/share/luca/config.yaml
+        sed -i "s/userpassword/$password/g" /usr/share/luca/config.yaml
         echo -e "\e[92m    [✔] Credentials saved successfully!\e[39m"
     else
         echo -e "\e[91m    [✘] The passwords aren't equal, please retry.\e[39m"
@@ -81,50 +81,50 @@ set_credentials() {
 }
 
 set_kioskmode() {
-    echo -n "[?] Do you want to start TinyCheck in fullscreen during the system startup (aka. Kiosk mode)? [Yes/No] "
+    echo -n "[?] Do you want to start Luca in fullscreen during the system startup (aka. Kiosk mode)? [Yes/No] "
     read answer
     if [[ "$answer" =~ ^([yY][eE][sS]|[yY])$ ]]
     then
-        sed -i "s/kioskmode/true/g" /usr/share/tinycheck/config.yaml
-        sed -i "s/hidemouse/true/g" /usr/share/tinycheck/config.yaml
-        sed -i "s/quitoption/true/g" /usr/share/tinycheck/config.yaml
-        echo -e "\e[92m    [✔] TinyCheck settled in kiosk mode\e[39m"
+        sed -i "s/kioskmode/true/g" /usr/share/luca/config.yaml
+        sed -i "s/hidemouse/true/g" /usr/share/luca/config.yaml
+        sed -i "s/quitoption/true/g" /usr/share/luca/config.yaml
+        echo -e "\e[92m    [✔] Luca settled in kiosk mode\e[39m"
     else
-        sed -i "s/kioskmode/false/g" /usr/share/tinycheck/config.yaml
-        sed -i "s/hidemouse/false/g" /usr/share/tinycheck/config.yaml
-        sed -i "s/quitoption/false/g" /usr/share/tinycheck/config.yaml
-        echo -e "\e[92m    [✔] TinyCheck settled in default mode, use the desktop icon to launch it.\e[39m"
+        sed -i "s/kioskmode/false/g" /usr/share/luca/config.yaml
+        sed -i "s/hidemouse/false/g" /usr/share/luca/config.yaml
+        sed -i "s/quitoption/false/g" /usr/share/luca/config.yaml
+        echo -e "\e[92m    [✔] Luca settled in default mode, use the desktop icon to launch it.\e[39m"
     fi
 }
 
 set_update() {
-    echo -n "[?] Do you want to be able to update TinyCheck from the frontend interface? [Yes/No] "
+    echo -n "[?] Do you want to be able to update Luca from the frontend interface? [Yes/No] "
     read answer
     if [[ "$answer" =~ ^([yY][eE][sS]|[yY])$ ]]
     then
-        sed -i "s/updateoption/true/g" /usr/share/tinycheck/config.yaml
+        sed -i "s/updateoption/true/g" /usr/share/luca/config.yaml
         echo -e "\e[92m    [✔] You'll be able to update it from the frontend!\e[39m"
     else
-        sed -i "s/updateoption/false/g" /usr/share/tinycheck/config.yaml
-        echo -e "\e[92m    [✔] You'll need to pass by the console script to update TinyCheck.\e[39m"
+        sed -i "s/updateoption/false/g" /usr/share/luca/config.yaml
+        echo -e "\e[92m    [✔] You'll need to pass by the console script to update Luca.\e[39m"
     fi
 }
 
 create_directory() {
-    # Create the TinyCheck directory and move the whole stuff there.
-    echo -e "[+] Creating TinyCheck folder under /usr/share/"
-    mkdir /usr/share/tinycheck
-    cp -Rf ./* /usr/share/tinycheck
+    # Create the Luca directory and move the whole stuff there.
+    echo -e "[+] Creating Luca folder under /usr/share/"
+    mkdir /usr/share/luca
+    cp -Rf ./* /usr/share/luca
 }
 
 get_version() {
-    git tag | tail -n 1 | xargs echo -n > /usr/share/tinycheck/VERSION
+    (git rev-parse --short HEAD || echo unknown) > /usr/share/luca/VERSION
 }
 
 generate_certificate() {
     # Generating SSL certificate for the backend.
     echo -e "[+] Generating SSL certificate for the backend"
-    openssl req -x509 -subj '/CN=tinycheck.local/O=TinyCheck Backend' -newkey rsa:4096 -nodes -keyout /usr/share/tinycheck/server/backend/key.pem -out /usr/share/tinycheck/server/backend/cert.pem -days 3650
+    openssl req -x509 -subj '/CN=luca.local/O=Luca Backend' -newkey rsa:4096 -nodes -keyout /usr/share/luca/server/backend/key.pem -out /usr/share/luca/server/backend/cert.pem -days 3650
 }
 
 create_services() {
@@ -133,13 +133,13 @@ create_services() {
     echo -e "\e[39m[+] Creating services\e[39m"
 
     echo -e "\e[92m    [✔] Creating frontend service\e[39m"
-    cat >/lib/systemd/system/tinycheck-frontend.service <<EOL
+    cat >/lib/systemd/system/luca-frontend.service <<EOL
 [Unit]
-Description=TinyCheck frontend service
+Description=Luca frontend service
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python3 /usr/share/tinycheck/server/frontend/main.py
+ExecStart=/usr/bin/python3 /usr/share/luca/server/frontend/main.py
 Restart=on-abort
 KillMode=process
 
@@ -148,13 +148,13 @@ WantedBy=multi-user.target
 EOL
 
     echo -e "\e[92m    [✔] Creating backend service\e[39m"
-    cat >/lib/systemd/system/tinycheck-backend.service <<EOL
+    cat >/lib/systemd/system/luca-backend.service <<EOL
 [Unit]
-Description=TinyCheck backend service
+Description=Luca backend service
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python3 /usr/share/tinycheck/server/backend/main.py
+ExecStart=/usr/bin/python3 /usr/share/luca/server/backend/main.py
 Restart=on-abort
 KillMode=process
 
@@ -163,9 +163,9 @@ WantedBy=multi-user.target
 EOL
 
     echo -e "\e[92m    [✔] Creating kiosk service\e[39m"
-    cat >/lib/systemd/system/tinycheck-kiosk.service <<EOL
+    cat >/lib/systemd/system/luca-kiosk.service <<EOL
 [Unit]
-Description=TinyCheck Kiosk
+Description=Luca Kiosk
 Wants=graphical.target
 After=graphical.target
 
@@ -173,7 +173,7 @@ After=graphical.target
 Environment=DISPLAY=:0.0
 Environment=XAUTHORITY=/home/${CURRENT_USER}/.Xauthority
 Type=forking
-ExecStart=/bin/bash /usr/share/tinycheck/kiosk.sh
+ExecStart=/bin/bash /usr/share/luca/kiosk.sh
 Restart=on-abort
 User=${CURRENT_USER}
 Group=${CURRENT_USER}
@@ -183,15 +183,15 @@ WantedBy=graphical.target
 EOL
 
     echo -e "\e[92m    [✔] Creating watchers service\e[39m"
-    cat >/lib/systemd/system/tinycheck-watchers.service <<EOL
+    cat >/lib/systemd/system/luca-watchers.service <<EOL
 [Unit]
-Description=TinyCheck watchers service
+Description=Luca watchers service
 Wants=network-online.target
 After=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python3 /usr/share/tinycheck/server/backend/watchers.py
+ExecStart=/usr/bin/python3 /usr/share/luca/server/backend/watchers.py
 Restart=on-abort
 KillMode=process
 
@@ -200,10 +200,10 @@ WantedBy=multi-user.target
 EOL
 
    echo -e "\e[92m    [✔] Enabling services\e[39m"
-   systemctl enable tinycheck-frontend &> /dev/null
-   systemctl enable tinycheck-backend &> /dev/null
-   systemctl enable tinycheck-kiosk &> /dev/null
-   systemctl enable tinycheck-watchers &> /dev/null
+   systemctl enable luca-frontend &> /dev/null
+   systemctl enable luca-backend &> /dev/null
+   systemctl enable luca-kiosk &> /dev/null
+   systemctl enable luca-watchers &> /dev/null
 }
 
 configure_dnsmask() {
@@ -216,7 +216,7 @@ configure_dnsmask() {
     if [[ -f "/etc/dnsmasq.conf" ]]; then
         cat >>/etc/dnsmasq.conf <<EOL
 
-## TinyCheck configuration ##
+## Luca configuration ##
 
 interface=${IFACE_IN}
 dhcp-range=192.168.100.2,192.168.100.3,255.255.255.0,24h
@@ -235,7 +235,7 @@ configure_dhcpcd() {
     if [[ -f "/etc/dhcpcd.conf" ]]; then
         cat >>/etc/dhcpcd.conf <<EOL
 
-## TinyCheck configuration ##
+## Luca configuration ##
 
 interface ${IFACE_IN}
    static ip_address=192.168.100.1/24
@@ -248,18 +248,18 @@ EOL
 
 update_config(){
     # Update the configuration
-    sed -i "s/iface_out/${IFACE_OUT}/g" /usr/share/tinycheck/config.yaml
-    sed -i "s/iface_in/${IFACE_IN}/g" /usr/share/tinycheck/config.yaml
+    sed -i "s/iface_out/${IFACE_OUT}/g" /usr/share/luca/config.yaml
+    sed -i "s/iface_in/${IFACE_IN}/g" /usr/share/luca/config.yaml
 }
 
 change_hostname() {
-   # Changing the hostname to tinycheck
-   echo -e "[+] Changing the hostname to tinycheck"
-   echo "tinycheck" > /etc/hostname
-   sed -i "s/$HOST/tinycheck/g" /etc/hosts
+   # Changing the hostname to luca
+   echo -e "[+] Changing the hostname to luca"
+   echo "luca" > /etc/hostname
+   sed -i "s/$HOST/luca/g" /etc/hosts
 
-   # Adding tinycheck.local to the /etc/hosts.
-   echo "127.0.0.1  tinycheck.local" >> /etc/hosts
+   # Adding luca.local to the /etc/hosts.
+   echo "127.0.0.1  luca.local" >> /etc/hosts
 }
 
 install_package() {
@@ -346,36 +346,33 @@ check_dependencies() {
 compile_vuejs() {
     # Installing packages, updating packages and compiling the VueJS interfaces
     echo -e "\e[39m[+] Compiling VueJS projects"
-    cd /usr/share/tinycheck/app/backend/ && npm install && npm audit fix && npm run build
-    cd /usr/share/tinycheck/app/frontend/ && npm install && npm audit fix && npm run build
+    cd /usr/share/luca/app/backend/ && npm install && npm audit fix && npm run build
+    cd /usr/share/luca/app/frontend/ && npm install && npm audit fix && npm run build
 }
 
 create_desktop() {
-    # Create desktop icon to lauch TinyCheck in a browser
+    # Create desktop icon to lauch Luca in a browser
     if [[ -d "/home/$CURRENT_USER/Desktop/" ]]; then
     echo -e "\e[39m[+] Create Desktop icon under /home/${CURRENT_USER}/Desktop\e[39m"
-    cat >"/home/$CURRENT_USER/Desktop/tinycheck.desktop" <<EOL
+    cat >"/home/$CURRENT_USER/Desktop/luca.desktop" <<EOL
 #!/usr/bin/env xdg-open
 
 [Desktop Entry]
 Version=1.0
 Type=Application
 Terminal=false
-Exec=bash /usr/share/tinycheck/kiosk.sh
-Name=TinyCheck
-Comment=Launcher for the TinyCheck frontend
-Icon=/usr/share/tinycheck/app/frontend/src/assets/icon.png
+Exec=bash /usr/share/luca/kiosk.sh
+Name=Luca
+Comment=Launcher for the Luca frontend
+Icon=/usr/share/luca/app/frontend/src/assets/icon.png
 EOL
      fi
 }
 
 cleaning() {
-    # Removing some files and useless directories
-    rm /usr/share/tinycheck/install.sh
-    rm /usr/share/tinycheck/README.md
-    rm /usr/share/tinycheck/LICENSE.txt
-    rm /usr/share/tinycheck/NOTICE.txt
-    rm -rf /usr/share/tinycheck/assets/
+    # Keep license/notice files and bundled indicator assets with Luca.
+    rm /usr/share/luca/install.sh
+    rm /usr/share/luca/README.md
 
     # Disabling the suricata service
     systemctl disable suricata.service &> /dev/null
@@ -426,7 +423,7 @@ check_interfaces(){
                 hw="$(iw $iface info | grep wiphy | cut -d" " -f2)" # Get the iface hardware id.
                 info="$(iw phy$hw info)"                            # Get the iface hardware infos.
                 if echo "$info" | grep -qE "* AP$"; then            # Know if the iface has the AP mode available.
-                    echo -n "[?] The interface $iface can be used for the Wi-Fi Access Point. Do you want to use it for the TinyCheck Access Point ? [Yes/No] "
+                    echo -n "[?] The interface $iface can be used for the Wi-Fi Access Point. Do you want to use it for the Luca Access Point ? [Yes/No] "
                     read answer
                     if [[ "$answer" =~ ^([yY][eE][sS]|[yY])$ ]]
                     then
@@ -447,9 +444,9 @@ check_interfaces(){
 }
 
 create_database() {
-    # Create the database under /usr/share/tinycheck/tinycheck.sqlite
+    # Create the database under /usr/share/luca/luca.sqlite
     # This base will be provisioned in IOCs by the watchers
-    sqlite3 "/usr/share/tinycheck/tinycheck.sqlite3" < "$SCRIPT_PATH/assets/scheme.sql"
+    sqlite3 "/usr/share/luca/luca.sqlite3" < "$SCRIPT_PATH/assets/scheme.sql"
 }
 
 change_configs() {
@@ -464,8 +461,8 @@ change_configs() {
 }
 
 feeding_iocs() {
-    echo -e "\e[39m[+] Feeding your TinyCheck instance with fresh IOCs and whitelist, please wait."
-    python3 /usr/share/tinycheck/server/backend/watchers.py 2>/dev/null
+    echo -e "\e[39m[+] Feeding your Luca instance with fresh IOCs and whitelist, please wait."
+    python3 /usr/share/luca/server/backend/watchers.py 2>/dev/null
 }
 
 reboot_box() {
@@ -483,12 +480,12 @@ reboot_box() {
 if [[ $EUID -ne 0 ]]; then
     echo "This must be run as root. Type in 'sudo bash $0' to run."
 	exit 1
-elif [[ -f /usr/share/tinycheck/config.yaml ]]; then
-    echo "You have a TinyCheck instance already installed on this box."
+elif [[ -f /usr/share/luca/config.yaml ]]; then
+    echo "You have a Luca instance already installed on this box."
     echo "  - If you want to update the instance, please execute:"
-    echo "      sudo bash /usr/share/tinycheck/update.sh"
+    echo "      sudo bash /usr/share/luca/update.sh"
     echo "  - If you want to uninstall the instance, please execute:"
-    echo "      sudo bash /usr/share/tinycheck/uninstall.sh"
+    echo "      sudo bash /usr/share/luca/uninstall.sh"
 	exit 1
 else
     welcome_screen

@@ -8,7 +8,7 @@ import sys
 
 parent = "/".join(sys.path[0].split("/")[:-2])
 engine = create_engine(
-    'sqlite:////{}/tinycheck.sqlite3'.format(parent), convert_unicode=True)
+    'sqlite:////{}/luca.sqlite3'.format(parent), convert_unicode=True)
 metadata = MetaData(bind=engine)
 session = scoped_session(sessionmaker(
     autocommit=False, autoflush=False, bind=engine))

@@ -119,7 +119,7 @@
         "packets_number": "Número de paquetes",
         "capture_sha1": "Captura SHA1",
         "report_for_the_capture": "Informe de la captura",
-        "report_footer": "Este informe ha sido autogenerado por un dispositivo Tinycheck. Para cualquier pregunta, informe de fallos o feedback por favor contacte con tinycheck@kaspersky.com.",
+        "report_footer": "Este informe ha sido autogenerado por un dispositivo Luca. Para cualquier pregunta, informe de fallos o feedback por favor contacte con https://github.com/topherchris420/Luca.",
         "high_msg": "Su dispositivo parece estar comprometido ya que tiene {} alerta(s) de nivel alto.",
         "moderate_msg": "Tienes {} alerta(s) de nivel moderado, su dispositivo podría estar comprometido. Por favor revíselas detenidamente.",
         "low_msg": "Solamente tiene {} alertas(s) de nivel bajo, por favor revíselas.",

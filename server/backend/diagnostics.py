@@ -11,7 +11,7 @@ __version__ = '1.0.17'
 
 def collect_accounts_info():
     """ This call collects generic information about
-        user accounts presented on system running TinyCheck.
+        user accounts presented on system running Luca.
 
         No personal information collected or provided by this call.
     """
@@ -31,7 +31,7 @@ def collect_accounts_info():
 
 def collect_os_info():
     """ This call collects generic information about 
-        operating system running TinyCheck.
+        operating system running Luca.
 
         No personal information collected or provided by this call.
     """
@@ -47,7 +47,7 @@ def collect_os_info():
     return os_info
 
 def collect_hardware_info():
-    """ This call collects information about hardware running TinyCheck.
+    """ This call collects information about hardware running Luca.
 
         No personal information collected or provided by this call.
     """
@@ -67,7 +67,7 @@ def collect_hardware_info():
 
 def collect_network_info():
     """ This call collects information about 
-        network configuration and state running TinyCheck.
+        network configuration and state running Luca.
 
         No personal information collected or provided by this call.
     """
@@ -88,7 +88,7 @@ def collect_network_info():
 
 def collect_dependency_info(package_list):
     """ This call collects information about
-        python packages required to run TinyCheck.
+        python packages required to run Luca.
     
         No personal information collected or provided by this call.
     """
@@ -116,7 +116,7 @@ def collect_db_tables_records_count(db_path, tables):
 
 def collect_internal_state(db_path, tables, to_check):
     """ This call collects information about
-        installed TinyCheck instance and its internal state.
+        installed Luca instance and its internal state.
     
         No personal information collected or provided by this call.
     """
@@ -158,16 +158,16 @@ def collect_internal_state(db_path, tables, to_check):
     return state_
 
 def main():
-    print("TinyCheck diagnostics script.\nVersion: %s" % (__version__))
+    print("Luca diagnostics script.\nVersion: %s" % (__version__))
     print("")
 
-    db_path = '/usr/share/tinycheck/tinycheck.sqlite3'
+    db_path = '/usr/share/luca/luca.sqlite3'
     tables = ['iocs', 'whitelist', 'misp']
     services = { }
-    services['frontend'] = 'tinycheck-frontend.service'
-    services['backend'] = 'tinycheck-backend.service'
-    services['kiosk'] = 'tinycheck-kiosk.service'
-    services['watchers'] = 'tinycheck-watchers.service'
+    services['frontend'] = 'luca-frontend.service'
+    services['backend'] = 'luca-backend.service'
+    services['kiosk'] = 'luca-kiosk.service'
+    services['watchers'] = 'luca-watchers.service'
 
     deps = [
         'pymisp', 'sqlalchemy', 'ipwhois',

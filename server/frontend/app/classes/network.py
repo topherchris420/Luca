@@ -137,7 +137,7 @@ class Network(object):
     def wifi_connect(self):
         """
             Connect to one of the WiFi networks present in the wpa_supplicant.conf.
-            :return: dict containing the TinyCheck <-> AP status.
+            :return: dict containing the Luca <-> AP status.
         """
 
         # Kill wpa_supplicant instances, if any.
@@ -309,7 +309,7 @@ class Network(object):
             sp.Popen(["nft","add","rule","ip","nat","postrouting","oifname",
                        self.iface_out,"counter","masquerade"]).wait()
 
-            # Prevent the device to reach the 80 and 443 of TinyCheck.
+            # Prevent the device to reach the 80 and 443 of Luca.
             sp.Popen(["nft","add","rule","ip","filter","INPUT","iifname",self.iface_in,"ip",
                       "protocol","tcp","ip","daddr","192.168.100.1","tcp","dport","{ 80,443}","counter","drop"]).wait()
             

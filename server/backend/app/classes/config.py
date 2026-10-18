@@ -112,12 +112,12 @@ class Config(object):
             Export the database.
             :return: send_file (the database)
         """
-        with open(os.path.join(self.dir, "tinycheck.sqlite3"), "rb") as f:
+        with open(os.path.join(self.dir, "luca.sqlite3"), "rb") as f:
             return send_file(
                 io.BytesIO(f.read()),
                 mimetype="application/octet-stream",
                 as_attachment=True,
-                attachment_filename='tinycheck-export-db.sqlite')
+                attachment_filename='luca-export-db.sqlite')
 
     def get_ifaces_in(self):
         """

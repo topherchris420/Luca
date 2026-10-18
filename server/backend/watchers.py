@@ -8,7 +8,7 @@ from app.classes.misp import MISP
 
 import requests
 import json
-import urllib3
+from pathlib import Path
 import time
 from multiprocessing import Process
 
@@ -19,7 +19,7 @@ from multiprocessing import Process
     sources without user interaction.
 """
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+LOCAL_ASSETS = Path(__file__).resolve().parents[2] / "assets"
 
 
 def watch_iocs():
@@ -31,6 +31,7 @@ def watch_iocs():
     # Retrieve the URLs from the configuration
     urls = read_config(("watchers", "iocs"))
     watchers = [{"url": url, "status": False} for url in urls]
+    watchers.insert(0, {"path": LOCAL_ASSETS / "iocs.json", "status": False})
 
     while True:
         for w in watchers:
@@ -39,16 +40,20 @@ def watch_iocs():
                 iocs_list = []
                 to_delete = []
                 try:
-                    res = requests.get(w["url"], verify=False)
-                    if res.status_code == 200:
-                        content = json.loads(res.content)
-                        iocs_list = content["iocs"] if "iocs" in content else []
-                        to_delete = content["to_delete"] if "to_delete" in content else []
+                    if "path" in w:
+                        with w["path"].open(encoding="utf-8") as handle:
+                            content = json.load(handle)
                     else:
-                        w["status"] = False
-                except:
+                        res = requests.get(w["url"], timeout=15)
+                        res.raise_for_status()
+                        content = res.json()
+                    iocs_list = content.get("iocs", [])
+                    to_delete = content.get("to_delete", [])
+                except (OSError, ValueError, requests.RequestException):
                     w["status"] = False
+                    continue
 
+                w["status"] = True
                 for ioc in iocs_list:
                     try:
                         iocs.add(ioc["type"], ioc["tag"],
@@ -80,6 +85,7 @@ def watch_whitelists():
 
     urls = read_config(("watchers", "whitelists"))
     watchers = [{"url": url, "status": False} for url in urls]
+    watchers.insert(0, {"path": LOCAL_ASSETS / "whitelist.json", "status": False})
 
     while True:
         for w in watchers:
@@ -88,16 +94,20 @@ def watch_whitelists():
                 elements = []
                 to_delete = []
                 try:
-                    res = requests.get(w["url"], verify=False)
-                    if res.status_code == 200:
-                        content = json.loads(res.content)
-                        elements = content["elements"] if "elements" in content else []
-                        to_delete = content["to_delete"] if "to_delete" in content else []
+                    if "path" in w:
+                        with w["path"].open(encoding="utf-8") as handle:
+                            content = json.load(handle)
                     else:
-                        w["status"] = False
-                except:
+                        res = requests.get(w["url"], timeout=15)
+                        res.raise_for_status()
+                        content = res.json()
+                    elements = content.get("elements", [])
+                    to_delete = content.get("to_delete", [])
+                except (OSError, ValueError, requests.RequestException):
                     w["status"] = False
+                    continue
 
+                w["status"] = True
                 for elem in elements:
                     try:
                         whitelist.add(elem["type"], elem["element"], "watcher")

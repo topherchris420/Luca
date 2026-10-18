@@ -29,7 +29,7 @@
             <div class="form-group">
                 <label class="form-switch">
                     <input type="checkbox" @change="switch_config('frontend', 'kiosk_mode')"  v-model="config.frontend.kiosk_mode">
-                    <i class="form-icon"></i> Use TinyCheck in Kiosk-mode.
+                    <i class="form-icon"></i> Use Luca in Kiosk-mode.
                 </label>
                 <label class="form-switch">
                     <input type="checkbox" @change="switch_config('frontend', 'virtual_keyboard')" v-model="config.frontend.virtual_keyboard">

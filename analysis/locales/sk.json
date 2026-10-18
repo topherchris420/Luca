@@ -119,7 +119,7 @@
         "packets_number": "Počet paketov",
         "capture_sha1": "Záznam SHA1",
         "report_for_the_capture": "Report pre záznam",
-        "report_footer": "Tento prehľad bol automaticky vygenerovaný zariadením Tinycheck. V prípade akýchkoľvek otázok, hlásení chýb alebo spätnej väzby nás kontaktujte na tinycheck@kaspersky.com.",
+        "report_footer": "Tento prehľad bol automaticky vygenerovaný zariadením Luca. V prípade akýchkoľvek otázok, hlásení chýb alebo spätnej väzby nás kontaktujte na https://github.com/topherchris420/Luca.",
         "high_msg": "Vaše zariadenie je napadnuté a máte {} kritické/ú výstrahy/u.",
         "moderate_msg": "Máte {} mierne/u výstrahy/u, Vaše zariadenie môže byť napadnuté. Pozrite si ich pozorne.",
         "low_msg": "Máte iba {} nízke/u výstrahy/u, neváhajte ich skontrolovať.",

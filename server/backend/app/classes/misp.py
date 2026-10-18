@@ -153,7 +153,7 @@ class MISP(object):
                                 tlp = re.search(r"^(?:tlp:)(red|green|amber|white)", tag['name'].lower())
                                 if tlp: ioc["tlp"] = tlp.group(1)
 
-                                # Add possible tag (need to match TinyCheck tags)
+                                # Add possible tag (need to match Luca tags)
                                 if tag["name"].lower() in [t["tag"] for t in defs["iocs_tags"]]:
                                     ioc["tag"] = tag["name"].lower()
                         yield ioc

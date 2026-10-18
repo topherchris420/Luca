@@ -3,7 +3,7 @@
         <div class="column col-6 col-xs-12">
             <h3 class="s-title">Network configuration</h3>
             <h5 class="s-subtitle">Interfaces configuration</h5>
-            <img src="@/assets/network.png" id="network-thumbnail" />
+            <img src="@/assets/luca-architecture.svg" id="network-thumbnail" />
             <div class="container interfaces-container">
                 <div class="columns">
                     <div class="column col-6">

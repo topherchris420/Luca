@@ -65,7 +65,7 @@ def import_db():
         f = request.files["file"]
         assert f.read(15) == b"SQLite format 3"
         d = "/".join(sys.path[0].split("/")[:-2])
-        f.save("/{}/tinycheck.sqlite3".format(d))
+        f.save("/{}/luca.sqlite3".format(d))
         res = {"status": True,
                "message": "Database updated"}
     except:

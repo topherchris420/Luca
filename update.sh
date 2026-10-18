@@ -1,89 +1,58 @@
-# Checking rights.
-if [[ $EUID -ne 0 ]]; then
-    echo "The update must be run as root. Type in 'sudo bash $0' to run it as root."
-	exit 1
+#!/usr/bin/env bash
+# Luca updater. Requires Git access to the Luca repository, which may be private.
+set -euo pipefail
+
+APP_DIR="/usr/share/luca"
+SOURCE_REPO="${LUCA_SOURCE_REPO:-https://github.com/topherchris420/Luca.git}"
+if [[ "${EUID}" -ne 0 ]]; then
+  echo "Run with sudo: sudo bash $0" >&2
+  exit 1
+fi
+if [[ ! -f "$APP_DIR/config.yaml" ]]; then
+  echo "Luca is not installed at $APP_DIR" >&2
+  exit 1
+fi
+if ! command -v git >/dev/null; then
+  echo "Git is required for updates." >&2
+  exit 1
 fi
 
-if [ $PWD = "/usr/share/tinycheck" ]; then
-    echo "[+] Cloning the current repository to /tmp/"
-    rm -rf /tmp/tinycheck/ &> /dev/null 
-    cd /tmp/ && git clone https://github.com/KasperskyLab/tinycheck
-    cd /tmp/tinycheck && bash update.sh
-elif [ $PWD = "/tmp/tinycheck" ]; then
+# Never remove a working installation if cloning fails.
+STAGING="$(mktemp -d /tmp/luca-update.XXXXXXXX)"
+trap 'rm -rf "$STAGING"' EXIT
+git clone --depth 1 "$SOURCE_REPO" "$STAGING/source"
+for dir in analysis app server assets; do
+  test -d "$STAGING/source/$dir" || { echo "Missing source directory: $dir" >&2; exit 1; }
+done
+python3 -m pip install -r "$STAGING/source/assets/requirements.txt"
 
-    echo "[+] Saving current backend's SSL configuration in /tmp/"
-    mv /usr/share/tinycheck/server/backend/*.pem /tmp/
+# Build prior to replacing the installed applications.
+for ui in frontend backend; do
+  (cd "$STAGING/source/app/$ui" && npm install && npm run build)
+done
 
-    echo "[+] Deleting the current TinyCheck folders and files."
-    rm -rf /usr/share/tinycheck/app/
-    rm -rf /usr/share/tinycheck/server/
-    rm -rf /usr/share/tinycheck/analysis/
-    rm /usr/share/tinycheck/update.sh
-    rm /usr/share/tinycheck/kiosk.sh
-    rm /usr/share/tinycheck/uninstall.sh
+# Retain local configuration, indicator database and TLS certificate.
+# Preserve installed TLS credentials before replacing server files.
+mkdir -p "$STAGING/tls"
+for f in cert.pem key.pem; do
+  if [[ -f "$APP_DIR/server/backend/$f" ]]; then cp "$APP_DIR/server/backend/$f" "$STAGING/tls/$f"; fi
+done
 
-    echo "[+] Copying the new TinyCheck version"
-    cp -R app/ /usr/share/tinycheck/app/
-    cp -R server/ /usr/share/tinycheck/server/
-    cp -R analysis/ /usr/share/tinycheck/analysis/
-    cp update.sh /usr/share/tinycheck/update.sh
-    cp kiosk.sh /usr/share/tinycheck/kiosk.sh
-    cp uninstall.sh /usr/share/tinycheck/uninstall.sh
+for dir in analysis app server assets; do
+  rm -rf "$APP_DIR/$dir"
+  cp -a "$STAGING/source/$dir" "$APP_DIR/$dir"
+done
+for f in cert.pem key.pem; do
+  if [[ -f "$STAGING/tls/$f" ]]; then cp "$STAGING/tls/$f" "$APP_DIR/server/backend/$f"; fi
+done
+for f in install.sh update.sh uninstall.sh kiosk.sh; do
+  cp "$STAGING/source/$f" "$APP_DIR/$f"
+done
 
-    echo "[+] Retoring the backend's SSL configuration from /tmp/"
-    mv /tmp/*.pem /usr/share/tinycheck/server/backend/
+# Keep NOTICE and LICENSE with the installed derivative distribution.
+cp "$STAGING/source/NOTICE.txt" "$APP_DIR/NOTICE.txt"
+cp "$STAGING/source/LICENSE.txt" "$APP_DIR/LICENSE.txt"
 
-    echo "[+] Checking possible new Python dependencies"
-    python3 -m pip install -r assets/requirements.txt
-
-    echo "[+] Building new interfaces..."
-    cd /usr/share/tinycheck/app/frontend/ && npm install && npm audit fix && npm run build
-    cd /usr/share/tinycheck/app/backend/ && npm install && npm audit fix && npm run build
-
-    echo "[+] Updating the database scheme..."
-    cd /usr/share/tinycheck/
-    sqlite3 tinycheck.sqlite3 < /tmp/tinycheck/assets/scheme.sql 2>/dev/null
-
-    echo "[+] Updating current configuration with new values."
-    if ! grep -q reboot_option /usr/share/tinycheck/config.yaml; then
-        sed -i 's/frontend:/frontend:\n  reboot_option: true/g' /usr/share/tinycheck/config.yaml
-    fi
-
-    if ! grep -q choose_net /usr/share/tinycheck/config.yaml; then
-        sed -i 's/frontend:/frontend:\n  choose_net: false/g' /usr/share/tinycheck/config.yaml
-    fi
-
-    if ! grep -q shutdown_option /usr/share/tinycheck/config.yaml; then
-        sed -i 's/frontend:/frontend:\n  shutdown_option: true/g' /usr/share/tinycheck/config.yaml
-    fi
-
-    if ! grep -q quit_option /usr/share/tinycheck/config.yaml; then
-        sed -i 's/frontend:/frontend:\n  quit_option: true/g' /usr/share/tinycheck/config.yaml
-    fi
-
-    if ! grep -q active /usr/share/tinycheck/config.yaml; then
-        sed -i 's/analysis:/analysis:\n  active: true/g' /usr/share/tinycheck/config.yaml
-    fi
-
-    if ! grep -q update /usr/share/tinycheck/config.yaml; then
-        sed -i 's/frontend:/frontend:\n  update: true/g' /usr/share/tinycheck/config.yaml
-    fi
-
-    if ! grep -q user_lang /usr/share/tinycheck/config.yaml; then
-        sed -i 's/frontend:/frontend:\n  user_lang: en/g' /usr/share/tinycheck/config.yaml
-    fi
-
-    if ! grep -q "CN=R3,O=Let's Encrypt,C=US" /usr/share/tinycheck/config.yaml; then
-        sed -i "s/free_issuers:/free_issuers:\n  - CN=R3,O=Let's Encrypt,C=US/g" /usr/share/tinycheck/config.yaml
-    fi
-
-    echo "[+] Restarting services"
-    service tinycheck-backend restart
-    service tinycheck-frontend restart
-    service tinycheck-watchers restart
-
-    echo "[+] Updating the TinyCheck version"
-    cd /tmp/tinycheck && git tag | tail -n 1 | xargs echo -n > /usr/share/tinycheck/VERSION
-
-    echo "[+] TinyCheck updated!"
-fi
+git -C "$STAGING/source" rev-parse --short HEAD > "$APP_DIR/VERSION"
+systemctl restart luca-backend luca-frontend luca-watchers
+echo "Luca updated."
