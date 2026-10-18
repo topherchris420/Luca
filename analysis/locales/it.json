@@ -119,7 +119,7 @@
         "packets_number": "Numero di pacchetti",
         "capture_sha1": "SHA1 acquisizione",
         "report_for_the_capture": "Rapporto relativo all'acquisizione",
-        "report_footer": "Questo rapporto è stato generato automaticamente da un dispositivo Luca. Per eventuali domande, segnalazioni di bug o feedback, contattare luca@vers3dynamics.com.",
+        "report_footer": "Questo rapporto è stato generato automaticamente da un dispositivo Luca. Per eventuali domande, segnalazioni di bug o feedback, contattare https://github.com/topherchris420/Luca.",
         "high_msg": "Sembra che il dispositivo sia compromesso poiché sono presenti {} avvisi con priorità elevata.",
         "moderate_msg": "Sono presenti {} avvisi con priorità moderata, è possibile che il dispositivo sia compromesso. Esaminarli con attenzione.",
         "low_msg": "Sono presenti solo {} avvisi con priorità bassa da controllare.",
