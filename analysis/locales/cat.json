@@ -119,7 +119,7 @@
         "Packets_number": "Número de paquets",
         "Capture_sha1": "Captura SHA1",
         "Report_for_the_capture": "Informe de la captura",
-        "Report_footer": "Aquest informe ha estat autogenerat per un dispositiu Tinycheck. Per a qualsevol pregunta, informe d 'error o feedback si us plau contacti amb tinycheck@kaspersky.com.",
+        "Report_footer": "Aquest informe ha estat autogenerat per un dispositiu Luca. Per a qualsevol pregunta, informe d 'error o feedback si us plau contacti amb luca@vers3dynamics.com.",
         "High_msg": "El dispositiu sembla estar compromès ja que té {} alerta(s) de nivell alt.",
         "Moderate_msg": "Tens {} alerta(s) de nivell moderat, el dispositiu podria estar compromès. Si us plau reviseu detingudament.",
         "Low_msg": "Només té {} alertes(s) de nivell baix, si us plau reviseu.",

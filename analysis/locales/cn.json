@@ -119,7 +119,7 @@
         "packets_number": "数据包数量",
         "capture_sha1": "捕获的 SHA1 哈希",
         "report_for_the_capture": "捕获报告",
-        "report_footer": "此报告由 Tinycheck 设备自动生成。如有任何疑问，错误报告或意见反馈，请联系 tinycheck@kaspersky.com 。",
+        "report_footer": "此报告由 Luca 设备自动生成。如有任何疑问，错误报告或意见反馈，请联系 luca@vers3dynamics.com 。",
         "high_msg": "您的设备很可能已被入侵，存在 {} 条高级警报.",
         "moderate_msg": "您有 {} 条中级警报，您的设备存在被入侵的可能性。请仔细检查这些警报。",
         "low_msg": "您只有 {} 条低级警报。请检查。",
