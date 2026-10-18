@@ -1,5 +1,5 @@
 {
-  "name": "@kaspersky/tinycheck-new",
+  "name": "@vers3dynamics/luca-frontend",
   "version": "0.1.0",
   "scripts": {
     "serve": "vue-cli-service serve --copy --port=4202",

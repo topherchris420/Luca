@@ -32,9 +32,18 @@ for ui in frontend backend; do
 done
 
 # Retain local configuration, indicator database and TLS certificate.
+# Preserve installed TLS credentials before replacing server files.
+mkdir -p "$STAGING/tls"
+for f in cert.pem key.pem; do
+  if [[ -f "$APP_DIR/server/backend/$f" ]]; then cp "$APP_DIR/server/backend/$f" "$STAGING/tls/$f"; fi
+done
+
 for dir in analysis app server assets; do
   rm -rf "$APP_DIR/$dir"
   cp -a "$STAGING/source/$dir" "$APP_DIR/$dir"
+done
+for f in cert.pem key.pem; do
+  if [[ -f "$STAGING/tls/$f" ]]; then cp "$STAGING/tls/$f" "$APP_DIR/server/backend/$f"; fi
 done
 for f in install.sh update.sh uninstall.sh kiosk.sh; do
   cp "$STAGING/source/$f" "$APP_DIR/$f"

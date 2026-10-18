@@ -122,7 +122,7 @@ The main configuration is [`config.yaml`](config.yaml).
 | `frontend.*` / `backend.*` | User-interface behavior and service access |
 | `watchers.iocs` / `watchers.whitelists` | External intelligence sources to load |
 
-The administration service supports adding and searching IoCs, adjusting allowlists, and configuring MISP sources. Optional external feeds are disabled by default; the repository supplies local IoC and allowlist JSON. Feed accuracy and freshness affect detection quality. Evaluate external sources before trusting them.
+The administration service supports adding and searching IoCs, adjusting allowlists, and configuring MISP sources. Optional external feeds are disabled by default; the watcher seeds the indicator database from the repository's bundled IoC and allowlist JSON. Feed accuracy and freshness affect detection quality. Evaluate external sources before trusting them.
 
 ## Technical limitations and operational security
 
@@ -135,3 +135,9 @@ The administration service supports adding and searching IoCs, adjusting allowli
 
 
 Licensed under the **Apache License 2.0**, subject to the included notices.
+
+## Updating Luca
+
+The updater draws from [Luca's repository](https://github.com/topherchris420/Luca). Because this repository may be private, `sudo bash /usr/share/luca/update.sh` requires Git credentials with access; if cloning fails, the installed application is left untouched. Remote version checks may be unavailable. Deployments using prior paths are **not migrated automatically**.
+
+See [`LICENSE.txt`](LICENSE.txt) and [`NOTICE.txt`](NOTICE.txt) for license terms and third-party attributions.

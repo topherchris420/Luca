@@ -62,8 +62,7 @@
         </div>
       </div>
       <div class="shortcuts">
-        <a href="https://github.com/KasperskyLab/tinycheck"><img src="@/assets/github.png" class="shortcut" /></a>
-        <a href="https://twitter.com/tinycheck"><img src="@/assets/twitter.png" class="shortcut" /></a>
+        <a href="https://github.com/topherchris420/Luca" target="_blank" rel="noopener noreferrer" aria-label="Luca source repository"><img src="@/assets/github.png" class="shortcut" alt="GitHub" /></a>
       </div>
     </div>
     <a class="off-canvas-overlay" href="#close"></a>
