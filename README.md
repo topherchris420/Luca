@@ -84,16 +84,16 @@ cd Luca
 sudo bash install.sh
 ```
 
-The installer interactively selects interfaces, creates the access-point configuration, installs system dependencies, builds both Vue applications, configures the database and systemd services, and generates a self-signed certificate for administration. Review [`install.sh`](install.sh) before running it: it can modify DNS, hostname, DHCP, network forwarding, and system services.
+The installer interactively selects interfaces, creates the access-point configuration, installs system dependencies, builds both Vue applications, configures the database and systemd services, and generates a self-signed certificate for administration. Bundled indicator data is seeded locally; optional remote feeds can be configured later. Review [`install.sh`](install.sh) before running it: it can modify DNS, hostname, DHCP, network forwarding, and system services.
 
-**Important:** Several installed paths, services, hostnames, and package identifiers still use the upstream **TinyCheck** name. These are implementation details of the current codebase, not separate Luca endpoints.
+**Luca-native deployment:** Installation uses `/usr/share/luca`, `luca-*` systemd services, and `luca.local`. Previously installed instances under other names require a migration or fresh installation; this release does not automatically migrate their databases.
 
 After installation, the conventional local interfaces are:
 
 | Interface | Address | Purpose |
 | --- | --- | --- |
-| Capture UI | `http://tinycheck.local` | Configure the monitored connection, run a capture, review findings |
-| Administration | `https://tinycheck.local` | Manage configuration, IoCs, allowlists, and integrations |
+| Capture UI | `http://luca.local` | Configure the monitored connection, run a capture, review findings |
+| Administration | `https://luca.local` | Manage configuration, IoCs, allowlists, and integrations |
 
 The administrative HTTPS certificate is self-signed. Hostname resolution and reachability depend on the machine's network configuration.
 
@@ -104,7 +104,7 @@ Through the capture UI, select or configure the upstream connection, start the a
 The analysis pipeline can also be invoked against an **existing capture directory** containing `capture.pcap` on an installed and configured system:
 
 ```bash
-python3 /usr/share/tinycheck/analysis/analysis.py /path/to/capture-directory
+python3 /usr/share/luca/analysis/analysis.py /path/to/capture-directory
 ```
 
 The analyzer expects its dependencies, executable paths, indicator database, and configuration to have been provisioned.
@@ -122,7 +122,7 @@ The main configuration is [`config.yaml`](config.yaml).
 | `frontend.*` / `backend.*` | User-interface behavior and service access |
 | `watchers.iocs` / `watchers.whitelists` | External intelligence sources to load |
 
-The administration service supports adding and searching IoCs, adjusting allowlists, and configuring MISP sources. Feed accuracy and freshness affect detection quality. Evaluate external sources before trusting them.
+The administration service supports adding and searching IoCs, adjusting allowlists, and configuring MISP sources. Optional external feeds are disabled by default; the repository supplies local IoC and allowlist JSON. Feed accuracy and freshness affect detection quality. Evaluate external sources before trusting them.
 
 ## Technical limitations and operational security
 

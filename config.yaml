@@ -73,11 +73,8 @@ network:
 # WATCHERS -
 # They are used to grab automatically new IOCs or whitelisted
 # elements from files containing IOCs export. You can add your
-# own URL and it will be parsed at each TinyCheck reboot.
+# optionally supply HTTPS feeds; bundled indicators load locally.
 #
 watchers:
-  iocs:
-  - https://raw.githubusercontent.com/KasperskyLab/TinyCheck/main/assets/iocs.json
-  - https://raw.githubusercontent.com/AssoEchap/stalkerware-indicators/master/generated/indicators-for-tinycheck.json
-  whitelists:
-  - https://raw.githubusercontent.com/KasperskyLab/TinyCheck/main/assets/whitelist.json
+  iocs: []
+  whitelists: []

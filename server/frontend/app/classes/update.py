@@ -12,21 +12,24 @@ import re
 class Update(object):
 
     def __init__(self):
-        self.project_url = "https://api.github.com/repos/KasperskyLab/TinyCheck/tags"
-        self.app_path = "/usr/share/tinycheck"
+        self.project_url = "https://api.github.com/repos/topherchris420/Luca/tags"
+        self.app_path = "/usr/share/luca"
         return None
 
     def check_version(self):
         """
-            Check if a new version of TinyCheck is available 
+            Check if a new version of Luca is available 
             by quering the Github api and comparing the last
             tag inside the VERSION file.
             :return: dict containing the available versions.
         """
         if read_config(("frontend", "update")):
             try:
-                res = requests.get(self.project_url)
+                res = requests.get(self.project_url, timeout=10)
+                res.raise_for_status()
                 res = json.loads(res.content.decode("utf8"))
+                if not res:
+                    return {"status": False, "message": "No public releases are available for version checks."}
 
                 with open(os.path.join(self.app_path, "VERSION")) as f:
                     cv = f.read()
@@ -48,7 +51,7 @@ class Update(object):
 
     def get_current_version(self):
         """
-            Get the current version of the TinyCheck instance
+            Get the current version of the Luca instance
             :return: dict containing the current version or error.
         """
         if read_config(("frontend", "update")):
@@ -73,7 +76,7 @@ class Update(object):
                 os.chdir(self.app_path)
                 sp.Popen(["bash", os.path.join(self.app_path, "update.sh")])
                 return {"status": True,
-                        "message": "Update successfully launched"}
+                        "message": "Luca update process started (requires repository access)"}
             except:
                 return {"status": False,
                         "message": "Issue during the update"}

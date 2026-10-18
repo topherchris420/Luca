@@ -1,32 +1,32 @@
 
 delete_folder(){
-    echo "[+] Deleting TinyCheck folders"
-    rm -rf /usr/share/tinycheck/
+    echo "[+] Deleting Luca folders"
+    rm -rf /usr/share/luca/
 }
 
 delete_services(){
-    echo "[+] Deleting TinyCheck services"
+    echo "[+] Deleting Luca services"
 
-    systemctl disable tinycheck-frontend &> /dev/null
-    systemctl disable tinycheck-backend &> /dev/null
-    systemctl disable tinycheck-kiosk &> /dev/null
-    systemctl disable tinycheck-watchers &> /dev/null
+    systemctl disable luca-frontend &> /dev/null
+    systemctl disable luca-backend &> /dev/null
+    systemctl disable luca-kiosk &> /dev/null
+    systemctl disable luca-watchers &> /dev/null
 
-    rm /lib/systemd/system/tinycheck-frontend.service
-    rm /lib/systemd/system/tinycheck-backend.service
-    rm /lib/systemd/system/tinycheck-kiosk.service
-    rm /lib/systemd/system/tinycheck-watchers.service
+    rm /lib/systemd/system/luca-frontend.service
+    rm /lib/systemd/system/luca-backend.service
+    rm /lib/systemd/system/luca-kiosk.service
+    rm /lib/systemd/system/luca-watchers.service
 }
 
 updating_config_files(){
     echo "[+] Updating dnsmasq and dhcpcd configuration files"
-    sed -i '/## TinyCheck configuration ##/,$d' /etc/dnsmasq.conf
-    sed -i '/## TinyCheck configuration ##/,$d' /etc/dhcpcd.conf
+    sed -i '/## Luca configuration ##/,$d' /etc/dnsmasq.conf
+    sed -i '/## Luca configuration ##/,$d' /etc/dhcpcd.conf
 }
 
 deleting_icon(){
     echo "[+] Deleting desktop icon"
-    rm "/home/${SUDO_USER}/Desktop/tinycheck.desktop"
+    rm "/home/${SUDO_USER}/Desktop/luca.desktop"
 }
 
 delete_packages(){
@@ -55,11 +55,11 @@ update_hostname(){
    echo -n "[?] Please provide a new hostname: "
    read hostname
    echo "$hostname" > /etc/hostname
-   sed -i "s/tinycheck/$hostname/g" /etc/hosts
+   sed -i "s/luca/$hostname/g" /etc/hosts
 }
 
 reboot_box() {
-    echo -e "\e[92m[+] TinyCheck uninstalled, let's reboot.\e[39m"
+    echo -e "\e[92m[+] Luca uninstalled, let's reboot.\e[39m"
     sleep 5
     reboot
 }

@@ -1,17 +1,17 @@
 #!/bin/bash
 
-# This small script is started by the service tinycheck-kiosk
-# in order to launch TinyCheck frontend in kiosk mode. 
+# This small script is started by the service luca-kiosk
+# in order to launch Luca frontend in kiosk mode. 
 
 xset s noblank
 xset s off
 xset -dpms
 
-if grep 'hide_mouse: true' /usr/share/tinycheck/config.yaml; then
+if grep 'hide_mouse: true' /usr/share/luca/config.yaml; then
     unclutter -idle 0 &
 fi
 
-if grep 'kiosk_mode: true' /usr/share/tinycheck/config.yaml; then
+if grep 'kiosk_mode: true' /usr/share/luca/config.yaml; then
     sed -i 's/"exited_cleanly":false/"exited_cleanly":true/' /home/pi/.config/chromium/Default/Preferences
     sed -i 's/"exit_type":"Crashed"/"exit_type":"Normal"/' /home/pi/.config/chromium/Default/Preferences
 
