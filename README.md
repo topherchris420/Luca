@@ -134,8 +134,6 @@ The administration service supports adding and searching IoCs, adjusting allowli
 - **Inspect only devices and networks you own or are authorized to assess.**
 
 
-Licensed under the **Apache License 2.0**, subject to the included notices.
-
 ## Updating Luca
 
 The updater draws from [Luca's repository](https://github.com/topherchris420/Luca). Because this repository may be private, `sudo bash /usr/share/luca/update.sh` requires Git credentials with access; if cloning fails, the installed application is left untouched. Remote version checks may be unavailable. Deployments using prior paths are **not migrated automatically**.
