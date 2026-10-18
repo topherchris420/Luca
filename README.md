@@ -133,8 +133,5 @@ The administration service supports adding and searching IoCs, adjusting allowli
 - **The software uses legacy dependencies.** Review and harden the Python, Vue, Node, and system package stack before exposing it beyond a controlled environment. In particular, review remote-access settings and the self-signed administrative certificate.
 - **Inspect only devices and networks you own or are authorized to assess.**
 
-## Project origin and licensing
-
-Luca's present codebase derives from [KasperskyLab/TinyCheck](https://github.com/KasperskyLab/TinyCheck). The implementation retains upstream paths and components. Upstream copyrights, third-party notices, and license terms remain applicable; see [`LICENSE.txt`](LICENSE.txt) and [`NOTICE.txt`](NOTICE.txt).
 
 Licensed under the **Apache License 2.0**, subject to the included notices.
