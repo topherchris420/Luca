@@ -17,7 +17,7 @@
                 <label class="form-upload empty" for="upload">
                     <input type="file" class="upload-field" id="upload" @change="import_from_file">
                     <p class="empty-title h5">Drop or select a database to import.</p>
-                    <p class="empty-subtitle">The database needs to be an export from a TinyCheck instance.</p>
+                    <p class="empty-subtitle">The database needs to be an export from a Luca instance.</p>
                 </label>
             </div>
         </div>
