@@ -1,0 +1,1388 @@
+{
+  "capture": {
+    "block_drop_counts": 0,
+    "bytes": 12760,
+    "direction_method": "pcapng_flags",
+    "directions": {
+      "rx": 11,
+      "tx": 17,
+      "unknown": 0
+    },
+    "errors": [],
+    "first": 1760000002.2,
+    "flows_not_recorded": 0,
+    "flows_recorded": 6,
+    "format": "pcapng",
+    "interface_stats": [
+      {
+        "ifdrop": 0,
+        "ifrecv": 28,
+        "interface": 0
+      }
+    ],
+    "last": 1760000007.5,
+    "link_types": [
+      1
+    ],
+    "non_ip": 0,
+    "packets": 28,
+    "protocols": [
+      {
+        "direction": "rx",
+        "packets": 9,
+        "proto": 6
+      },
+      {
+        "direction": "rx",
+        "packets": 2,
+        "proto": 17
+      },
+      {
+        "direction": "tx",
+        "packets": 12,
+        "proto": 6
+      },
+      {
+        "direction": "tx",
+        "packets": 5,
+        "proto": 17
+      }
+    ],
+    "truncated": false
+  },
+  "collection": {
+    "attach_mode": "tcx",
+    "attach_note": null,
+    "btf": true,
+    "capture_interface": "wlan0",
+    "clock": {
+      "match_tolerance_s": 1.0,
+      "offset": 1759999000.0,
+      "uncertainty_s": 0.0
+    },
+    "drop_note": null,
+    "drop_tracepoint": "attached",
+    "error": null,
+    "generator": {
+      "commit": "synthetic",
+      "libbpf": "1.5",
+      "name": "luca-observatory",
+      "version": "1.0.0"
+    },
+    "health": {
+      "collector_cpu_seconds": 0.0,
+      "collector_max_rss_kb": 0,
+      "drop_capacity": 4096,
+      "drop_entries": 1,
+      "drops_not_keyed": 0,
+      "flow_capacity": 65536,
+      "flow_entries": 8,
+      "flows_not_recorded": 0,
+      "map_memlock_bytes": 0,
+      "max_sample_gap_ns": 1000000000,
+      "parse_errors": 0,
+      "prog_stats": {
+        "enabled": false,
+        "note": null,
+        "programs": []
+      },
+      "samples": 11,
+      "snapshot_failures": 0,
+      "timeline_truncated": false
+    },
+    "interface": "wlan0",
+    "kernel": "synthetic",
+    "limits": {
+      "flush_interval": 10.0,
+      "max_drops": 4096,
+      "max_flows": 65536,
+      "max_samples": 86400,
+      "sample_interval": 1.0
+    },
+    "loss": {
+      "drops_not_keyed": 0,
+      "flow_capacity": 65536,
+      "flow_entries": 8,
+      "flows_not_recorded": 0,
+      "max_sample_gap_ns": 1000000000,
+      "parse_errors": 0,
+      "snapshot_failures": 0,
+      "timeline_truncated": false
+    },
+    "machine": "synthetic",
+    "session": "ABCDEF12",
+    "session_record": {
+      "status": "stopped"
+    },
+    "status": "stopped",
+    "window": {
+      "end": 1760000010.0,
+      "start": 1760000000.0
+    }
+  },
+  "counts": {
+    "corroborated": 8,
+    "inferred": 1,
+    "missing": 0,
+    "single_source": 3,
+    "uncertain": 0
+  },
+  "coverage": {
+    "assessment": "consistent",
+    "capture_reported_drops": 0,
+    "directions": {
+      "rx": {
+        "captured": 11,
+        "captured_in_interval": 2,
+        "interval": [
+          1760000003.0,
+          1760000007.0
+        ],
+        "kernel_lower": 2,
+        "kernel_upper": 2,
+        "kernel_upper_whole_capture": 11,
+        "missed_at_least": 0,
+        "state": "consistent",
+        "tolerance": 2
+      },
+      "tx": {
+        "captured": 17,
+        "captured_in_interval": 5,
+        "interval": [
+          1760000003.0,
+          1760000007.0
+        ],
+        "kernel_lower": 5,
+        "kernel_upper": 5,
+        "kernel_upper_whole_capture": 17,
+        "missed_at_least": 0,
+        "state": "consistent",
+        "tolerance": 2
+      }
+    },
+    "explanation": "no capture loss is detectable between kernel samples; loss within the tolerance or outside the sampled interval cannot be excluded",
+    "unknown_direction_packets": 0,
+    "window": {
+      "first": 1760000002.2,
+      "interior_samples": 5,
+      "kernel_first_sample": 1760000000.0,
+      "kernel_last_sample": 1760000010.0,
+      "kernel_samples": 11,
+      "last": 1760000007.5
+    }
+  },
+  "evidence_files": {
+    "alerts": "assets/alerts.json",
+    "capture": "capture.pcap",
+    "conn": "assets/conn.log",
+    "dns": "assets/dns.log",
+    "session": "assets/observatory_session.json",
+    "snapshot": "assets/observatory.json",
+    "suricata": "assets/suricata_events.json"
+  },
+  "findings": [
+    {
+      "basis": [
+        "obs-8"
+      ],
+      "description_args": [
+        6,
+        "8.8.8.8",
+        "8.8.8.8"
+      ],
+      "facts": {
+        "packets": 6,
+        "rx_packets": 3,
+        "tx_packets": 3
+      },
+      "host": "8.8.8.8",
+      "id": "KNO-01",
+      "inference": null,
+      "level": "Low",
+      "provenance": "OBSERVED",
+      "title_args": [
+        "8.8.8.8"
+      ]
+    },
+    {
+      "basis": [
+        "obs-9"
+      ],
+      "description_args": [
+        3,
+        "ESP",
+        "203.0.113.7"
+      ],
+      "facts": {
+        "packets": 3,
+        "proto": 50,
+        "protocol": "ESP"
+      },
+      "host": "203.0.113.7",
+      "id": "KNO-02",
+      "inference": null,
+      "level": "Moderate",
+      "provenance": "OBSERVED",
+      "title_args": [
+        "ESP",
+        "203.0.113.7"
+      ]
+    },
+    {
+      "basis": [
+        "obs-4"
+      ],
+      "description_args": [
+        1,
+        "1",
+        64
+      ],
+      "facts": {
+        "baseline_ttl": 64,
+        "flows": 1,
+        "observed_ttls": [
+          63
+        ]
+      },
+      "host": "",
+      "id": "KNO-03",
+      "inference": "another host or stack forwards traffic through the device",
+      "level": "Low",
+      "observation": "obs-12",
+      "provenance": "INFERRED",
+      "title_args": []
+    },
+    {
+      "basis": [
+        "obs-5"
+      ],
+      "description_args": [
+        1,
+        "10.99.0.5",
+        "192.168.100.0/24"
+      ],
+      "facts": {
+        "packets": 1,
+        "prefixes": "192.168.100.0/24",
+        "source": "10.99.0.5"
+      },
+      "host": "10.99.0.5",
+      "id": "KNO-04",
+      "inference": null,
+      "level": "Moderate",
+      "provenance": "OBSERVED",
+      "title_args": [
+        "10.99.0.5"
+      ]
+    }
+  ],
+  "generated_at": 1760000012.0,
+  "generator": {
+    "name": "luca_observatory.correlate",
+    "version": "1.0.0"
+  },
+  "labels": {
+    "CORRELATED": 8,
+    "INFERRED": 1,
+    "OBSERVED": 3
+  },
+  "limitations": [
+    "Corroboration means two collection paths inside the same host kernel agree: the TC classifier and the AF_PACKET capture. Both depend on the configured interface being the access point.",
+    "Kernel flows aggregate every packet of a 5-tuple over the collector's lifetime, which starts before and ends after the capture; per-flow counts can exceed the capture's.",
+    "Retransmission counts are passive estimates (data below the highest sequence already seen)."
+  ],
+  "note": "SYNTHETIC OFFLINE EXAMPLE. Computed from invented packets in observatory/tests/fixtures.py; no kernel, network or device was observed.",
+  "observations": [
+    {
+      "category": "inferred",
+      "details": {
+        "baseline_ttl": 64,
+        "flows": 1,
+        "observed_ttls": [
+          63
+        ]
+      },
+      "evidence": [
+        {
+          "file": "observatory_summary.json",
+          "pointer": "#obs-4",
+          "record": null,
+          "source": "observation"
+        }
+      ],
+      "id": "obs-12",
+      "label": "INFERRED",
+      "reasons": [
+        "heuristic KNO-03: another host or stack forwards traffic through the device"
+      ],
+      "sources": [
+        "observatory.heuristic"
+      ],
+      "statement": "Inferred, not measured: 1 flow(s) left the device with a TTL/hop limit 1 below the device's usual initial value (64). A decremented TTL normally means another host, virtual machine or container sends traffic through the device (for example hotspot tethering). Applications can also set their own TTL, so this is an indication to verify, not a conclusion."
+    },
+    {
+      "category": "single_source",
+      "details": {
+        "kernel": {
+          "rx": {
+            "bytes": 294,
+            "packets": 3
+          },
+          "tx": {
+            "bytes": 294,
+            "packets": 3
+          }
+        },
+        "tcp": {}
+      },
+      "evidence": [
+        {
+          "file": "assets/observatory.json",
+          "pointer": "/flows/2",
+          "record": {
+            "family": 4,
+            "first_dir": "tx",
+            "local": "192.168.100.2",
+            "local_port": 0,
+            "proto": 1,
+            "remote": "8.8.8.8",
+            "remote_port": 0,
+            "rx": {
+              "bytes": 294,
+              "first_ns": 1004012000084,
+              "fragments": false,
+              "last_ns": 1006012000084,
+              "packets": 3,
+              "retrans_or_reorder": 0,
+              "tcp_flags": 0,
+              "ttl_max": 117,
+              "ttl_min": 117
+            },
+            "tx": {
+              "bytes": 294,
+              "first_ns": 1004000000000,
+              "fragments": false,
+              "last_ns": 1006000000000,
+              "packets": 3,
+              "retrans_or_reorder": 0,
+              "tcp_flags": 0,
+              "ttl_max": 64,
+              "ttl_min": 64
+            }
+          },
+          "source": "kernel.tc"
+        }
+      ],
+      "id": "obs-8",
+      "label": "OBSERVED",
+      "reasons": [
+        "the capture filter (\"tcp or udp\") excludes ICMP"
+      ],
+      "sources": [
+        "kernel.tc"
+      ],
+      "statement": "ICMP 192.168.100.2 <-> 8.8.8.8: recorded by the kernel only; the capture filter (\"tcp or udp\") excludes ICMP."
+    },
+    {
+      "category": "single_source",
+      "details": {
+        "kernel": {
+          "rx": {
+            "bytes": 0,
+            "packets": 0
+          },
+          "tx": {
+            "bytes": 360,
+            "packets": 3
+          }
+        },
+        "tcp": {}
+      },
+      "evidence": [
+        {
+          "file": "assets/observatory.json",
+          "pointer": "/flows/3",
+          "record": {
+            "family": 4,
+            "first_dir": "tx",
+            "local": "192.168.100.2",
+            "local_port": 0,
+            "proto": 50,
+            "remote": "203.0.113.7",
+            "remote_port": 0,
+            "rx": {
+              "bytes": 0,
+              "first_ns": null,
+              "fragments": false,
+              "last_ns": null,
+              "packets": 0,
+              "retrans_or_reorder": 0,
+              "tcp_flags": 0,
+              "ttl_max": null,
+              "ttl_min": null
+            },
+            "tx": {
+              "bytes": 360,
+              "first_ns": 1004500000000,
+              "fragments": false,
+              "last_ns": 1004700000048,
+              "packets": 3,
+              "retrans_or_reorder": 0,
+              "tcp_flags": 0,
+              "ttl_max": 64,
+              "ttl_min": 64
+            }
+          },
+          "source": "kernel.tc"
+        }
+      ],
+      "id": "obs-9",
+      "label": "OBSERVED",
+      "reasons": [
+        "the capture filter (\"tcp or udp\") excludes ESP"
+      ],
+      "sources": [
+        "kernel.tc"
+      ],
+      "statement": "ESP 192.168.100.2 <-> 203.0.113.7: recorded by the kernel only; the capture filter (\"tcp or udp\") excludes ESP."
+    },
+    {
+      "category": "single_source",
+      "details": {
+        "drop": {
+          "count": 3,
+          "direction": "tx",
+          "family": 4,
+          "proto": 17,
+          "reason": 3,
+          "reason_name": "NO_SOCKET",
+          "remote": "192.168.100.1",
+          "remote_port": 9,
+          "subsystem": 0
+        }
+      },
+      "evidence": [
+        {
+          "file": "assets/observatory.json",
+          "pointer": "/drops/0",
+          "record": {
+            "count": 3,
+            "direction": "tx",
+            "family": 4,
+            "proto": 17,
+            "reason": 3,
+            "reason_name": "NO_SOCKET",
+            "remote": "192.168.100.1",
+            "remote_port": 9,
+            "subsystem": 0
+          },
+          "source": "kernel.kfree_skb"
+        }
+      ],
+      "id": "obs-10",
+      "label": "OBSERVED",
+      "reasons": [],
+      "sources": [
+        "kernel.kfree_skb"
+      ],
+      "statement": "The kernel dropped 3 packet(s) arriving from the device (UDP 192.168.100.1:9), reason NO_SOCKET."
+    },
+    {
+      "category": "corroborated",
+      "details": {
+        "assessment": "consistent",
+        "capture_reported_drops": 0,
+        "directions": {
+          "rx": {
+            "captured": 11,
+            "captured_in_interval": 2,
+            "interval": [
+              1760000003.0,
+              1760000007.0
+            ],
+            "kernel_lower": 2,
+            "kernel_upper": 2,
+            "kernel_upper_whole_capture": 11,
+            "missed_at_least": 0,
+            "state": "consistent",
+            "tolerance": 2
+          },
+          "tx": {
+            "captured": 17,
+            "captured_in_interval": 5,
+            "interval": [
+              1760000003.0,
+              1760000007.0
+            ],
+            "kernel_lower": 5,
+            "kernel_upper": 5,
+            "kernel_upper_whole_capture": 17,
+            "missed_at_least": 0,
+            "state": "consistent",
+            "tolerance": 2
+          }
+        },
+        "explanation": "no capture loss is detectable between kernel samples; loss within the tolerance or outside the sampled interval cannot be excluded",
+        "unknown_direction_packets": 0,
+        "window": {
+          "first": 1760000002.2,
+          "interior_samples": 5,
+          "kernel_first_sample": 1760000000.0,
+          "kernel_last_sample": 1760000010.0,
+          "kernel_samples": 11,
+          "last": 1760000007.5
+        }
+      },
+      "evidence": [
+        {
+          "file": "assets/observatory.json",
+          "pointer": "/timeline",
+          "record": "11 samples",
+          "source": "kernel.tc"
+        },
+        {
+          "file": "capture.pcap",
+          "pointer": "interface_statistics",
+          "record": [
+            {
+              "ifdrop": 0,
+              "ifrecv": 28,
+              "interface": 0
+            }
+          ],
+          "source": "capture.pcap"
+        }
+      ],
+      "id": "obs-1",
+      "label": "CORRELATED",
+      "reasons": [
+        "no capture loss is detectable between kernel samples; loss within the tolerance or outside the sampled interval cannot be excluded"
+      ],
+      "sources": [
+        "kernel.tc",
+        "capture.pcap"
+      ],
+      "statement": "Capture completeness is consistent with the kernel's packet counts for the capture window."
+    },
+    {
+      "category": "corroborated",
+      "details": {
+        "capture": {
+          "conn_states": [
+            "SF"
+          ],
+          "packets": {
+            "rx": 9,
+            "tx": 10
+          },
+          "zeek_connections": 1
+        },
+        "kernel": {
+          "rx": {
+            "bytes": 11274,
+            "packets": 9
+          },
+          "tx": {
+            "bytes": 668,
+            "packets": 10
+          }
+        },
+        "tcp": {
+          "ack_after_ms": 1.0,
+          "handshake": "completed",
+          "syn_count": 1,
+          "syn_from": "tx",
+          "synack_after_ms": 20.0
+        }
+      },
+      "evidence": [
+        {
+          "file": "assets/observatory.json",
+          "pointer": "/flows/0",
+          "record": {
+            "family": 4,
+            "first_dir": "tx",
+            "local": "192.168.100.2",
+            "local_port": 50000,
+            "proto": 6,
+            "remote": "93.184.216.34",
+            "remote_port": 443,
+            "rx": {
+              "bytes": 11274,
+              "first_ns": 1002220000029,
+              "fragments": false,
+              "last_ns": 1002319999933,
+              "packets": 9,
+              "retrans_or_reorder": 0,
+              "tcp_flags": 18,
+              "ttl_max": 52,
+              "ttl_min": 52
+            },
+            "tcp": {
+              "ack_ns": 1002220999956,
+              "syn_count": 1,
+              "syn_dir": "tx",
+              "syn_ns": 1002200000048,
+              "synack_ns": 1002220000029
+            },
+            "tx": {
+              "bytes": 668,
+              "first_ns": 1002200000048,
+              "fragments": false,
+              "last_ns": 1002325000048,
+              "packets": 10,
+              "retrans_or_reorder": 0,
+              "tcp_flags": 18,
+              "ttl_max": 64,
+              "ttl_min": 64
+            }
+          },
+          "source": "kernel.tc"
+        },
+        {
+          "file": "assets/conn.log",
+          "pointer": "line:8",
+          "record": {
+            "conn_state": "SF",
+            "duration": 0.125,
+            "history": null,
+            "id.orig_h": "192.168.100.2",
+            "id.orig_p": 50000,
+            "id.resp_h": "93.184.216.34",
+            "id.resp_p": 443,
+            "missed_bytes": 0,
+            "orig_bytes": 0,
+            "orig_ip_bytes": 528,
+            "orig_pkts": 10,
+            "proto": "tcp",
+            "resp_bytes": 0,
+            "resp_ip_bytes": 11148,
+            "resp_pkts": 9,
+            "service": null,
+            "ts": 1760000002.2,
+            "uid": "Csynthetic0"
+          },
+          "source": "zeek.conn"
+        }
+      ],
+      "id": "obs-2",
+      "label": "CORRELATED",
+      "reasons": [],
+      "sources": [
+        "kernel.tc",
+        "zeek.conn"
+      ],
+      "statement": "TCP 192.168.100.2:50000 <-> 93.184.216.34:443: recorded by the kernel classifier (10 packets out, 9 in) and by the capture (1 Zeek connection(s), 19 packets)."
+    },
+    {
+      "category": "corroborated",
+      "details": {
+        "capture": {
+          "conn_states": [
+            "SF"
+          ],
+          "packets": {
+            "rx": 2,
+            "tx": 2
+          },
+          "zeek_connections": 1
+        },
+        "kernel": {
+          "rx": {
+            "bytes": 300,
+            "packets": 2
+          },
+          "tx": {
+            "bytes": 160,
+            "packets": 2
+          }
+        },
+        "tcp": {}
+      },
+      "evidence": [
+        {
+          "file": "assets/observatory.json",
+          "pointer": "/flows/1",
+          "record": {
+            "family": 4,
+            "first_dir": "tx",
+            "local": "192.168.100.2",
+            "local_port": 40000,
+            "proto": 17,
+            "remote": "9.9.9.9",
+            "remote_port": 53,
+            "rx": {
+              "bytes": 300,
+              "first_ns": 1003009999990,
+              "fragments": false,
+              "last_ns": 1003109999895,
+              "packets": 2,
+              "retrans_or_reorder": 0,
+              "tcp_flags": 0,
+              "ttl_max": 57,
+              "ttl_min": 57
+            },
+            "tx": {
+              "bytes": 160,
+              "first_ns": 1003000000000,
+              "fragments": false,
+              "last_ns": 1003099999905,
+              "packets": 2,
+              "retrans_or_reorder": 0,
+              "tcp_flags": 0,
+              "ttl_max": 64,
+              "ttl_min": 64
+            }
+          },
+          "source": "kernel.tc"
+        },
+        {
+          "file": "assets/conn.log",
+          "pointer": "line:9",
+          "record": {
+            "conn_state": "SF",
+            "duration": 0.11,
+            "history": null,
+            "id.orig_h": "192.168.100.2",
+            "id.orig_p": 40000,
+            "id.resp_h": "9.9.9.9",
+            "id.resp_p": 53,
+            "missed_bytes": 0,
+            "orig_bytes": 0,
+            "orig_ip_bytes": 132,
+            "orig_pkts": 2,
+            "proto": "udp",
+            "resp_bytes": 0,
+            "resp_ip_bytes": 272,
+            "resp_pkts": 2,
+            "service": null,
+            "ts": 1760000003.0,
+            "uid": "Csynthetic1"
+          },
+          "source": "zeek.conn"
+        }
+      ],
+      "id": "obs-3",
+      "label": "CORRELATED",
+      "reasons": [],
+      "sources": [
+        "kernel.tc",
+        "zeek.conn"
+      ],
+      "statement": "UDP 192.168.100.2:40000 <-> 9.9.9.9:53: recorded by the kernel classifier (2 packets out, 2 in) and by the capture (1 Zeek connection(s), 4 packets)."
+    },
+    {
+      "category": "corroborated",
+      "details": {
+        "capture": {
+          "conn_states": [
+            "S0"
+          ],
+          "packets": {
+            "rx": 0,
+            "tx": 1
+          },
+          "zeek_connections": 1
+        },
+        "kernel": {
+          "rx": {
+            "bytes": 0,
+            "packets": 0
+          },
+          "tx": {
+            "bytes": 60,
+            "packets": 1
+          }
+        },
+        "tcp": {}
+      },
+      "evidence": [
+        {
+          "file": "assets/observatory.json",
+          "pointer": "/flows/4",
+          "record": {
+            "family": 4,
+            "first_dir": "tx",
+            "local": "192.168.100.2",
+            "local_port": 41000,
+            "proto": 17,
+            "remote": "198.51.100.9",
+            "remote_port": 5353,
+            "rx": {
+              "bytes": 0,
+              "first_ns": null,
+              "fragments": false,
+              "last_ns": null,
+              "packets": 0,
+              "retrans_or_reorder": 0,
+              "tcp_flags": 0,
+              "ttl_max": null,
+              "ttl_min": null
+            },
+            "tx": {
+              "bytes": 60,
+              "first_ns": 1005000000000,
+              "fragments": false,
+              "last_ns": 1005000000000,
+              "packets": 1,
+              "retrans_or_reorder": 0,
+              "tcp_flags": 0,
+              "ttl_max": 63,
+              "ttl_min": 63
+            }
+          },
+          "source": "kernel.tc"
+        },
+        {
+          "file": "assets/conn.log",
+          "pointer": "line:10",
+          "record": {
+            "conn_state": "S0",
+            "duration": 0.0,
+            "history": null,
+            "id.orig_h": "192.168.100.2",
+            "id.orig_p": 41000,
+            "id.resp_h": "198.51.100.9",
+            "id.resp_p": 5353,
+            "missed_bytes": 0,
+            "orig_bytes": 0,
+            "orig_ip_bytes": 46,
+            "orig_pkts": 1,
+            "proto": "udp",
+            "resp_bytes": 0,
+            "resp_ip_bytes": 0,
+            "resp_pkts": 0,
+            "service": null,
+            "ts": 1760000005.0,
+            "uid": "Csynthetic2"
+          },
+          "source": "zeek.conn"
+        }
+      ],
+      "id": "obs-4",
+      "label": "CORRELATED",
+      "reasons": [],
+      "sources": [
+        "kernel.tc",
+        "zeek.conn"
+      ],
+      "statement": "UDP 192.168.100.2:41000 <-> 198.51.100.9:5353: recorded by the kernel classifier (1 packets out, 0 in) and by the capture (1 Zeek connection(s), 1 packets)."
+    },
+    {
+      "category": "corroborated",
+      "details": {
+        "capture": {
+          "conn_states": [
+            "S0"
+          ],
+          "packets": {
+            "rx": 0,
+            "tx": 1
+          },
+          "zeek_connections": 1
+        },
+        "kernel": {
+          "rx": {
+            "bytes": 0,
+            "packets": 0
+          },
+          "tx": {
+            "bytes": 60,
+            "packets": 1
+          }
+        },
+        "tcp": {}
+      },
+      "evidence": [
+        {
+          "file": "assets/observatory.json",
+          "pointer": "/flows/5",
+          "record": {
+            "family": 4,
+            "first_dir": "tx",
+            "local": "10.99.0.5",
+            "local_port": 42000,
+            "proto": 17,
+            "remote": "198.51.100.10",
+            "remote_port": 9999,
+            "rx": {
+              "bytes": 0,
+              "first_ns": null,
+              "fragments": false,
+              "last_ns": null,
+              "packets": 0,
+              "retrans_or_reorder": 0,
+              "tcp_flags": 0,
+              "ttl_max": null,
+              "ttl_min": null
+            },
+            "tx": {
+              "bytes": 60,
+              "first_ns": 1005500000000,
+              "fragments": false,
+              "last_ns": 1005500000000,
+              "packets": 1,
+              "retrans_or_reorder": 0,
+              "tcp_flags": 0,
+              "ttl_max": 64,
+              "ttl_min": 64
+            }
+          },
+          "source": "kernel.tc"
+        },
+        {
+          "file": "assets/conn.log",
+          "pointer": "line:11",
+          "record": {
+            "conn_state": "S0",
+            "duration": 0.0,
+            "history": null,
+            "id.orig_h": "10.99.0.5",
+            "id.orig_p": 42000,
+            "id.resp_h": "198.51.100.10",
+            "id.resp_p": 9999,
+            "missed_bytes": 0,
+            "orig_bytes": 0,
+            "orig_ip_bytes": 46,
+            "orig_pkts": 1,
+            "proto": "udp",
+            "resp_bytes": 0,
+            "resp_ip_bytes": 0,
+            "resp_pkts": 0,
+            "service": null,
+            "ts": 1760000005.5,
+            "uid": "Csynthetic3"
+          },
+          "source": "zeek.conn"
+        }
+      ],
+      "id": "obs-5",
+      "label": "CORRELATED",
+      "reasons": [],
+      "sources": [
+        "kernel.tc",
+        "zeek.conn"
+      ],
+      "statement": "UDP 10.99.0.5:42000 <-> 198.51.100.10:9999: recorded by the kernel classifier (1 packets out, 0 in) and by the capture (1 Zeek connection(s), 1 packets)."
+    },
+    {
+      "category": "corroborated",
+      "details": {
+        "capture": {
+          "conn_states": [
+            "S0"
+          ],
+          "packets": {
+            "rx": 0,
+            "tx": 2
+          },
+          "zeek_connections": 1
+        },
+        "kernel": {
+          "rx": {
+            "bytes": 0,
+            "packets": 0
+          },
+          "tx": {
+            "bytes": 148,
+            "packets": 2
+          }
+        },
+        "tcp": {
+          "handshake": "SYN without SYN-ACK",
+          "syn_count": 2,
+          "syn_from": "tx"
+        }
+      },
+      "evidence": [
+        {
+          "file": "assets/observatory.json",
+          "pointer": "/flows/6",
+          "record": {
+            "family": 4,
+            "first_dir": "tx",
+            "local": "192.168.100.2",
+            "local_port": 50001,
+            "proto": 6,
+            "remote": "192.0.2.80",
+            "remote_port": 80,
+            "rx": {
+              "bytes": 0,
+              "first_ns": null,
+              "fragments": false,
+              "last_ns": null,
+              "packets": 0,
+              "retrans_or_reorder": 0,
+              "tcp_flags": 0,
+              "ttl_max": null,
+              "ttl_min": null
+            },
+            "tcp": {
+              "ack_ns": null,
+              "syn_count": 2,
+              "syn_dir": "tx",
+              "syn_ns": 1007000000000,
+              "synack_ns": null
+            },
+            "tx": {
+              "bytes": 148,
+              "first_ns": 1006000000000,
+              "fragments": false,
+              "last_ns": 1007000000000,
+              "packets": 2,
+              "retrans_or_reorder": 0,
+              "tcp_flags": 2,
+              "ttl_max": 64,
+              "ttl_min": 64
+            }
+          },
+          "source": "kernel.tc"
+        },
+        {
+          "file": "assets/conn.log",
+          "pointer": "line:12",
+          "record": {
+            "conn_state": "S0",
+            "duration": 1.0,
+            "history": null,
+            "id.orig_h": "192.168.100.2",
+            "id.orig_p": 50001,
+            "id.resp_h": "192.0.2.80",
+            "id.resp_p": 80,
+            "missed_bytes": 0,
+            "orig_bytes": 0,
+            "orig_ip_bytes": 120,
+            "orig_pkts": 2,
+            "proto": "tcp",
+            "resp_bytes": 0,
+            "resp_ip_bytes": 0,
+            "resp_pkts": 0,
+            "service": null,
+            "ts": 1760000006.0,
+            "uid": "Csynthetic4"
+          },
+          "source": "zeek.conn"
+        }
+      ],
+      "id": "obs-6",
+      "label": "CORRELATED",
+      "reasons": [],
+      "sources": [
+        "kernel.tc",
+        "zeek.conn"
+      ],
+      "statement": "TCP 192.168.100.2:50001 <-> 192.0.2.80:80: recorded by the kernel classifier (2 packets out, 0 in) and by the capture (1 Zeek connection(s), 2 packets)."
+    },
+    {
+      "category": "corroborated",
+      "details": {
+        "capture": {
+          "conn_states": [
+            "S0"
+          ],
+          "packets": {
+            "rx": 0,
+            "tx": 1
+          },
+          "zeek_connections": 1
+        },
+        "kernel": {
+          "rx": {
+            "bytes": 0,
+            "packets": 0
+          },
+          "tx": {
+            "bytes": 90,
+            "packets": 1
+          }
+        },
+        "tcp": {}
+      },
+      "evidence": [
+        {
+          "file": "assets/observatory.json",
+          "pointer": "/flows/7",
+          "record": {
+            "family": 4,
+            "first_dir": "tx",
+            "local": "192.168.100.2",
+            "local_port": 5353,
+            "proto": 17,
+            "remote": "224.0.0.251",
+            "remote_port": 5353,
+            "rx": {
+              "bytes": 0,
+              "first_ns": null,
+              "fragments": false,
+              "last_ns": null,
+              "packets": 0,
+              "retrans_or_reorder": 0,
+              "tcp_flags": 0,
+              "ttl_max": null,
+              "ttl_min": null
+            },
+            "tx": {
+              "bytes": 90,
+              "first_ns": 1007500000000,
+              "fragments": false,
+              "last_ns": 1007500000000,
+              "packets": 1,
+              "retrans_or_reorder": 0,
+              "tcp_flags": 0,
+              "ttl_max": 255,
+              "ttl_min": 255
+            }
+          },
+          "source": "kernel.tc"
+        },
+        {
+          "file": "assets/conn.log",
+          "pointer": "line:13",
+          "record": {
+            "conn_state": "S0",
+            "duration": 0.0,
+            "history": null,
+            "id.orig_h": "192.168.100.2",
+            "id.orig_p": 5353,
+            "id.resp_h": "224.0.0.251",
+            "id.resp_p": 5353,
+            "missed_bytes": 0,
+            "orig_bytes": 0,
+            "orig_ip_bytes": 76,
+            "orig_pkts": 1,
+            "proto": "udp",
+            "resp_bytes": 0,
+            "resp_ip_bytes": 0,
+            "resp_pkts": 0,
+            "service": null,
+            "ts": 1760000007.5,
+            "uid": "Csynthetic5"
+          },
+          "source": "zeek.conn"
+        }
+      ],
+      "id": "obs-7",
+      "label": "CORRELATED",
+      "reasons": [],
+      "sources": [
+        "kernel.tc",
+        "zeek.conn"
+      ],
+      "statement": "UDP 192.168.100.2:5353 <-> 224.0.0.251:5353: recorded by the kernel classifier (1 packets out, 0 in) and by the capture (1 Zeek connection(s), 1 packets)."
+    },
+    {
+      "category": "corroborated",
+      "details": {
+        "flows": 1,
+        "packets": 19
+      },
+      "evidence": [
+        {
+          "file": "assets/alerts.json",
+          "pointer": "/high/0",
+          "record": {
+            "description": "Synthetic alert for the offline example.",
+            "host": "93.184.216.34",
+            "id": "IOC-01",
+            "level": "High",
+            "title": "Example IOC match"
+          },
+          "source": "luca.alert"
+        },
+        {
+          "file": "assets/observatory.json",
+          "pointer": "/flows/0",
+          "record": {
+            "family": 4,
+            "first_dir": "tx",
+            "local": "192.168.100.2",
+            "local_port": 50000,
+            "proto": 6,
+            "remote": "93.184.216.34",
+            "remote_port": 443,
+            "rx": {
+              "bytes": 11274,
+              "first_ns": 1002220000029,
+              "fragments": false,
+              "last_ns": 1002319999933,
+              "packets": 9,
+              "retrans_or_reorder": 0,
+              "tcp_flags": 18,
+              "ttl_max": 52,
+              "ttl_min": 52
+            },
+            "tcp": {
+              "ack_ns": 1002220999956,
+              "syn_count": 1,
+              "syn_dir": "tx",
+              "syn_ns": 1002200000048,
+              "synack_ns": 1002220000029
+            },
+            "tx": {
+              "bytes": 668,
+              "first_ns": 1002200000048,
+              "fragments": false,
+              "last_ns": 1002325000048,
+              "packets": 10,
+              "retrans_or_reorder": 0,
+              "tcp_flags": 18,
+              "ttl_max": 64,
+              "ttl_min": 64
+            }
+          },
+          "source": "kernel.tc"
+        }
+      ],
+      "id": "obs-11",
+      "label": "CORRELATED",
+      "reasons": [],
+      "sources": [
+        "luca.alert",
+        "kernel.tc"
+      ],
+      "statement": "Alert IOC-01 (93.184.216.34): the kernel independently recorded 1 flow(s), 19 packet(s), with this host, 1 completed TCP handshake(s). This corroborates that the traffic occurred, not the alert's interpretation."
+    }
+  ],
+  "observations_truncated": false,
+  "schema": "luca.observatory.summary/1",
+  "statistics": {
+    "drops": 3,
+    "flows": 8,
+    "protocols": [
+      {
+        "bytes": 0,
+        "name": "TCP",
+        "proto": 6,
+        "rx_packets": 9,
+        "tx_packets": 12
+      },
+      {
+        "bytes": 0,
+        "name": "UDP",
+        "proto": 17,
+        "rx_packets": 2,
+        "tx_packets": 5
+      },
+      {
+        "bytes": 0,
+        "name": "ICMP",
+        "proto": 1,
+        "rx_packets": 3,
+        "tx_packets": 3
+      },
+      {
+        "bytes": 0,
+        "name": "ESP",
+        "proto": 50,
+        "rx_packets": 0,
+        "tx_packets": 3
+      }
+    ],
+    "tcp": {
+      "flows": 2,
+      "handshakes_completed": 1,
+      "retrans_or_reorder": 0,
+      "rst_seen": 0,
+      "syn_without_synack": 1,
+      "synack_after_ms_median": 20.0,
+      "synack_samples": 1
+    },
+    "top_remotes": [
+      {
+        "bytes": 11942,
+        "flows": 1,
+        "packets": 19,
+        "remote": "93.184.216.34"
+      },
+      {
+        "bytes": 588,
+        "flows": 1,
+        "packets": 6,
+        "remote": "8.8.8.8"
+      },
+      {
+        "bytes": 460,
+        "flows": 1,
+        "packets": 4,
+        "remote": "9.9.9.9"
+      },
+      {
+        "bytes": 360,
+        "flows": 1,
+        "packets": 3,
+        "remote": "203.0.113.7"
+      },
+      {
+        "bytes": 148,
+        "flows": 1,
+        "packets": 2,
+        "remote": "192.0.2.80"
+      },
+      {
+        "bytes": 90,
+        "flows": 1,
+        "packets": 1,
+        "remote": "224.0.0.251"
+      },
+      {
+        "bytes": 60,
+        "flows": 1,
+        "packets": 1,
+        "remote": "198.51.100.9"
+      },
+      {
+        "bytes": 60,
+        "flows": 1,
+        "packets": 1,
+        "remote": "198.51.100.10"
+      }
+    ],
+    "totals": {
+      "rx": {
+        "arp": 0,
+        "bytes": 11868,
+        "eapol": 0,
+        "ipv4": 14,
+        "ipv6": 0,
+        "other_l2": 0,
+        "pcap_filter_skbs": 11,
+        "segments": 14,
+        "skbs": 14
+      },
+      "tx": {
+        "arp": 0,
+        "bytes": 1840,
+        "eapol": 0,
+        "ipv4": 23,
+        "ipv6": 0,
+        "other_l2": 0,
+        "pcap_filter_skbs": 17,
+        "segments": 23,
+        "skbs": 23
+      }
+    }
+  },
+  "synthetic": true,
+  "unsupported": [
+    {
+      "conclusion": "Which application or process produced the device's traffic",
+      "reason": "Packets of the inspected device are forwarded by the access point. They are not associated with any local process, and the observatory does not attribute them."
+    },
+    {
+      "conclusion": "What the traffic contained",
+      "reason": "The observatory records headers and counters only, never payload."
+    },
+    {
+      "conclusion": "Whether TCP segments were retransmitted rather than reordered",
+      "reason": "At this vantage point both look alike; retrans_or_reorder counts include both."
+    },
+    {
+      "conclusion": "Whether traffic is malicious",
+      "reason": "Kernel counters describe traffic, not intent. Alerts remain heuristic ratings or indicator matches; kernel corroboration confirms that traffic occurred, not what it meant."
+    },
+    {
+      "conclusion": "Packets the device sent that never reached the access point",
+      "reason": "Radio-level losses happen before the kernel sees a packet and are not observable here."
+    }
+  ]
+}

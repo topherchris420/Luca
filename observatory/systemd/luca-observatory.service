@@ -1,0 +1,64 @@
+# Luca kernel observatory collector service (optional).
+# Installed only by observatory/scripts/install-observatory.sh.
+#
+# The service runs as the unprivileged user luca-observatory with exactly
+# the capabilities its collector needs. Luca's web applications gain no
+# privilege: they talk to this service over a local Unix socket.
+
+[Unit]
+Description=Luca kernel observatory collector service
+Documentation=file:///usr/share/luca/observatory/README.md
+After=network.target
+
+[Service]
+# The service reports readiness once its socket is listening, so
+# "systemctl start" returns when it can serve requests.
+Type=notify
+User=luca-observatory
+Group=luca-observatory
+
+# Runs as root ("+") and copies only the observatory settings and interface
+# names out of config.yaml, so the service itself never reads the file
+# that holds Luca's credentials.
+ExecStartPre=+/usr/share/luca/observatory/luca-observatoryd render-settings --config /usr/share/luca/config.yaml --out /run/luca-observatory/settings.json --group luca-observatory
+ExecStart=/usr/share/luca/observatory/luca-observatoryd serve --settings /run/luca-observatory/settings.json --collector /usr/share/luca/observatory/build/luca-observatory --bpf-dir /usr/share/luca/observatory/build
+# An exit with observatory.enabled false is clean: the service stays stopped.
+Restart=on-failure
+RestartSec=5
+
+RuntimeDirectory=luca-observatory
+RuntimeDirectoryMode=0750
+StateDirectory=luca-observatory
+StateDirectoryMode=0750
+UMask=0027
+
+# BPF programs and maps, TC attachment, the kfree_skb raw tracepoint.
+AmbientCapabilities=CAP_BPF CAP_NET_ADMIN CAP_PERFMON
+CapabilityBoundingSet=CAP_BPF CAP_NET_ADMIN CAP_PERFMON
+NoNewPrivileges=yes
+# Kernels before 5.11 charge BPF maps to RLIMIT_MEMLOCK.
+LimitMEMLOCK=infinity
+
+MemoryMax=256M
+CPUQuota=50%
+TasksMax=32
+
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictAddressFamilies=AF_UNIX AF_NETLINK
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+SystemCallArchitectures=native
+
+[Install]
+WantedBy=multi-user.target

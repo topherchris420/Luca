@@ -30,6 +30,11 @@ python3 -m pip install -r "$STAGING/source/assets/requirements.txt"
 for ui in frontend backend; do
   (cd "$STAGING/source/app/$ui" && npm install && npm run build)
 done
+# The optional kernel observatory is rebuilt only where it was installed.
+OBSERVATORY_UNIT=/lib/systemd/system/luca-observatory.service
+if [[ -f "$OBSERVATORY_UNIT" && -d "$STAGING/source/observatory" ]]; then
+  make -C "$STAGING/source/observatory"
+fi
 
 # Retain local configuration, indicator database and TLS certificate.
 # Preserve installed TLS credentials before replacing server files.
@@ -45,6 +50,14 @@ done
 for f in cert.pem key.pem; do
   if [[ -f "$STAGING/tls/$f" ]]; then cp "$STAGING/tls/$f" "$APP_DIR/server/backend/$f"; fi
 done
+if [[ -d "$STAGING/source/observatory" ]]; then
+  rm -rf "$APP_DIR/observatory"
+  cp -a "$STAGING/source/observatory" "$APP_DIR/observatory"
+  if [[ -f "$OBSERVATORY_UNIT" ]]; then
+    install -m 0644 "$APP_DIR/observatory/systemd/luca-observatory.service" "$OBSERVATORY_UNIT"
+    systemctl daemon-reload
+  fi
+fi
 for f in install.sh update.sh uninstall.sh kiosk.sh; do
   cp "$STAGING/source/$f" "$APP_DIR/$f"
 done
@@ -55,4 +68,5 @@ cp "$STAGING/source/LICENSE.txt" "$APP_DIR/LICENSE.txt"
 
 git -C "$STAGING/source" rev-parse --short HEAD > "$APP_DIR/VERSION"
 systemctl restart luca-backend luca-frontend luca-watchers
+if [[ -f "$OBSERVATORY_UNIT" ]]; then systemctl restart luca-observatory || true; fi
 echo "Luca updated."

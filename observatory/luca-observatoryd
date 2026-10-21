@@ -1,0 +1,18 @@
+#!/usr/bin/python3 -I
+# -*- coding: utf-8 -*-
+
+"""
+    Launcher of the luca-observatory collector service. Run with -I
+    (isolated mode) so that neither the environment nor the working
+    directory can change which modules the service imports.
+"""
+
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+
+from luca_observatory.daemon import main
+
+if __name__ == "__main__":
+    sys.exit(main())

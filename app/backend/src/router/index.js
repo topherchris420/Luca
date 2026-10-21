@@ -57,6 +57,12 @@ const routes = [
     name: 'whitelist-search',
     component: () => import('../views/whitelist-search.vue'),
     props: true
+  },
+  {
+    path: '/observatory',
+    name: 'observatory',
+    component: () => import('../views/observatory.vue'),
+    props: true
   }
 ]
 

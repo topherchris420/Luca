@@ -55,6 +55,7 @@ Severity classifications are **High**, **Moderate**, and **Low**. The detection 
 | Administration | Vue 2 interface and Flask API for settings, IoCs, allowlists, and MISP integrations | [`app/backend/`](app/backend/), [`server/backend/`](server/backend/) |
 | Intelligence storage | SQLite tables for indicators, allowlist entries, and MISP connection settings | [`assets/scheme.sql`](assets/scheme.sql) |
 | Feed synchronization | Background loaders for configured IoC/allowlist URLs and MISP instances | [`server/backend/watchers.py`](server/backend/watchers.py) |
+| Kernel observatory (optional) | eBPF collector and service recording the access point kernel's view of the device's traffic, correlated with the capture | [`observatory/`](observatory/) |
 
 ### Analysis artifacts
 
@@ -123,6 +124,12 @@ The main configuration is [`config.yaml`](config.yaml).
 | `watchers.iocs` / `watchers.whitelists` | External intelligence sources to load |
 
 The administration service supports adding and searching IoCs, adjusting allowlists, and configuring MISP sources. Optional external feeds are disabled by default; the watcher seeds the indicator database from the repository's bundled IoC and allowlist JSON. Feed accuracy and freshness affect detection quality. Evaluate external sources before trusting them.
+
+## Kernel observatory (optional)
+
+The installer can add an opt-in **kernel observatory**: eBPF programs on the access-point interface count the device's traffic per flow, including protocols outside the capture filter, and record kernel drop reasons. A separate service with three capabilities runs them, so the Flask applications gain no privileges. Its summary labels each statement OBSERVED, CORRELATED, INFERRED or UNAVAILABLE. It never attributes traffic to an application, and it does not report a capture as complete unless kernel counts confirm it. The administration interface shows it under **Kernel Observatory**.
+
+It is disabled unless you choose it, and no eBPF dependency is installed otherwise. Requirements, security and privacy notes, tests and the preregistered experiments are in [`observatory/README.md`](observatory/README.md). Kernel validation so far covers CI virtual machines with veth topologies, not Wi-Fi hardware.
 
 ## Technical limitations and operational security
 

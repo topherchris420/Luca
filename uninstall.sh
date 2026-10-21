@@ -1,4 +1,10 @@
 
+delete_observatory(){
+    if [[ -f /lib/systemd/system/luca-observatory.service ]]; then
+        bash /usr/share/luca/observatory/scripts/install-observatory.sh --uninstall || true
+    fi
+}
+
 delete_folder(){
     echo "[+] Deleting Luca folders"
     rm -rf /usr/share/luca/
@@ -69,6 +75,7 @@ if [[ $EUID -ne 0 ]]; then
     echo "The update must be run as root. Type in 'sudo bash $0' to run it as root."
 	exit 1
 else
+    delete_observatory
     delete_folder
     delete_services
     updating_config_files

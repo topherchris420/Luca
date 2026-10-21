@@ -9,6 +9,11 @@ import re
 import json
 import sys
 
+try:
+    from classes.observatoryengine import parse_fast_log_line
+except ImportError:  # the optional observatory/ directory is not installed
+    parse_fast_log_line = None
+
 
 class SuricataEngine():
 
@@ -16,6 +21,7 @@ class SuricataEngine():
 
         self.wdir = capture_directory
         self.alerts = []
+        self.events = []
         self.rules_file = "/tmp/rules.rules"
         self.pcap_path = os.path.join(self.wdir, "capture.pcap")
         self.rules = [r[0] for r in get_iocs(
@@ -50,6 +56,10 @@ class SuricataEngine():
                                     "description": self.template["SNORT-01"]["description"],
                                     "level": "High",
                                     "id": "SNORT-01"})
+                # Keep the flow tuple for the optional observatory correlation.
+                event = parse_fast_log_line(line) if parse_fast_log_line else None
+                if event:
+                    self.events.append(event)
         # Remove fast.log
         os.remove("/tmp/fast.log")
 
@@ -98,3 +108,6 @@ class SuricataEngine():
 
     def get_alerts(self):
         return [dict(t) for t in {tuple(d.items()) for d in self.alerts}]
+
+    def get_events(self):
+        return self.events

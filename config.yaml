@@ -70,6 +70,26 @@ network:
   - wifi
   tokenized_ssids: true
 
+# OBSERVATORY -
+# Optional kernel-native network observatory (eBPF, Linux only).
+# Disabled unless enabled here AND the luca-observatory service was
+# installed (see observatory/README.md). Only the access point interface
+# (network.in) is observed; allowed_interfaces can restrict it further.
+#
+observatory:
+  enabled: false
+  allowed_interfaces: []
+  attach: auto
+  drop_reasons: true
+  btf: ''
+  sample_interval: 1
+  flush_interval: 10
+  max_flows: 65536
+  max_drops: 4096
+  max_session_seconds: 7200
+  retention_days: 7
+  retention_sessions: 20
+
 # WATCHERS -
 # Local indicator bundles are loaded automatically at startup.
 # Optional HTTPS feeds can be listed below when configured.
