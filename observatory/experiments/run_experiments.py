@@ -1036,9 +1036,11 @@ class Runner(object):
         if gha:
             env["github"] = {k: os.environ.get(v) for k, v in (("repository", "GITHUB_REPOSITORY"),
                                                                 ("run_id", "GITHUB_RUN_ID"), ("sha", "GITHUB_SHA"),
+                                                                ("head_ref", "GITHUB_HEAD_REF"),
                                                                 ("runner_os", "RUNNER_OS"),
                                                                 ("runner_arch", "RUNNER_ARCH"),
-                                                                ("image", "ImageOS"))}
+                                                                ("image", "ImageOS"),
+                                                                ("image_version", "ImageVersion"))}
         return env
 
 

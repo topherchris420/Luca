@@ -178,7 +178,10 @@ jobs:
       - name: Build the collector
         run: make -C observatory
       - name: Run the experiments
-        run: sudo python3 observatory/experiments/run_experiments.py --build-dir observatory/build --out experiment-results
+        # --preserve-env: the result records which runner, run and commit produced it
+        run: >-
+          sudo --preserve-env=GITHUB_ACTIONS,GITHUB_REPOSITORY,GITHUB_RUN_ID,GITHUB_SHA,GITHUB_HEAD_REF,RUNNER_OS,RUNNER_ARCH,ImageOS,ImageVersion
+          python3 observatory/experiments/run_experiments.py --build-dir observatory/build --out experiment-results
       - uses: actions/upload-artifact@v4
         if: always()
         with:
