@@ -444,7 +444,9 @@ class Runner(object):
             "ttl63": any(f["tx"]["ttl_min"] == 63 for f in flows(snap, proto=17, remote=netns.SERVER, remote_port=5354)),
             "foreign_source": bool(flows(snap, local=netns.FOREIGN, remote=netns.SERVER)),
             "esp": any(f["tx"]["packets"] == 3 for f in flows(snap, proto=50, remote=netns.SERVER)),
-            "icmp": any(f["tx"]["packets"] == 3 and f["rx"]["packets"] == 3
+            # 3 echo requests; rx also holds the port unreachable for the
+            # TTL-63 datagram, since ICMP flows are keyed without a type.
+            "icmp": any(f["tx"]["packets"] == 3 and 3 <= f["rx"]["packets"] <= 4
                         for f in flows(snap, proto=1, remote=netns.SERVER)),
             "ipv6": any(f["tx"]["packets"] >= 3 for f in flows(snap, family=6, proto=17, remote=netns.AP6,
                                                                remote_port=9)),

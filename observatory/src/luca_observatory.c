@@ -807,6 +807,19 @@ static int load_object(struct bpf_object *obj, char *err_buf, size_t err_len)
 	return err;
 }
 
+#ifdef LUCA_HAVE_TCX
+/* True on kernels >= 6.6, the first with TCX links. */
+static bool kernel_has_tcx(void)
+{
+	struct utsname uts;
+	int major = 0, minor = 0;
+
+	if (uname(&uts) || sscanf(uts.release, "%d.%d", &major, &minor) != 2)
+		return false;
+	return major > 6 || (major == 6 && minor >= 6);
+}
+#endif
+
 static int load_classifiers(struct observatory *o)
 {
 	struct bpf_map *map;
@@ -825,6 +838,16 @@ static int load_classifiers(struct observatory *o)
 	map = bpf_object__find_map_by_name(o->obj, "luca_flows");
 	if (map)
 		bpf_map__set_max_entries(map, o->max_flows);
+#ifdef LUCA_HAVE_TCX
+	/* bpf_program__attach_tcx() attaches with the program's expected
+	 * attach type, which SEC("tc") leaves at 0 (the kernel then answers
+	 * EINVAL). It must be set before loading; cls_bpf ignores it, so the
+	 * clsact fallback is unaffected. Older kernels load as before. */
+	if (o->pref != ATTACH_TC && kernel_has_tcx()) {
+		bpf_program__set_expected_attach_type(o->prog_ingress, BPF_TCX_INGRESS);
+		bpf_program__set_expected_attach_type(o->prog_egress, BPF_TCX_EGRESS);
+	}
+#endif
 
 	err = load_object(o->obj, o->error, sizeof(o->error));
 	if (err)

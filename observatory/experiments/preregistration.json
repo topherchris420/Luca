@@ -4,7 +4,9 @@
   "registered_at": "2026-10-20",
   "registered_before_measurement": true,
   "statement": "These questions, procedures, metrics and pass thresholds were written before any experiment was run. run_experiments.py reads the thresholds from this file and records its SHA-256 in every result. Any later change must be appended to amendments with its date and reason; results produced under an earlier version keep that version's digest.",
-  "amendments": [],
+  "amendments": [
+    {"date": "2026-10-21", "before_measurement": true, "reason": "The first CI kernel smoke runs (no experiment had run) showed that the generated traffic elicited ICMP errors the scenarios did not intend: the remote host answered ESP with protocol unreachable and the TTL-63 datagram to a closed port with port unreachable.", "changes": ["The traffic server accepts ESP (a raw IPPROTO_ESP socket), as a tunnel endpoint would, so ESP elicits no ICMP.", "Scenario D forwarded sends its TTL-63 UDP datagrams as 3 answered round trips to the remote echo port instead of to a closed port.", "A1: for the icmp class, the generated count is the 3 echo requests (tx); because ICMP flows are keyed without a type, rx holds the 3 replies plus the port unreachable for experiment A's TTL-63 datagram (3 to 4 packets, the error being subject to rate limiting)."]}
+  ],
   "scope": {
     "environment": "Three Linux network namespaces joined by veth pairs on one host (tests/netns.py): a device, an access point running the collector and the capture, and a remote network. In CI this host is a virtual machine.",
     "applies_to": "The kernel, libbpf build and virtual topology recorded in each result.",

@@ -73,8 +73,16 @@ def main():
     check("schema", snap.get("schema") == "luca.observatory/1", snap.get("schema"))
     check("status stopped", snap["status"] == "stopped",
           "{} {}".format(snap["status"], snap["attach"].get("error") or ""))
-    check("attach mode", args.expect_mode == "any" and snap["attach"]["mode"] in ("tcx", "tc")
-          or snap["attach"]["mode"] == args.expect_mode, snap["attach"]["mode"])
+    expect_mode = args.expect_mode
+    if expect_mode == "auto":
+        # auto must use tcx wherever both the kernel and libbpf provide it.
+        try:
+            lib = tuple(int(x) for x in str(snap["generator"]["libbpf"]).split(".")[:2])
+        except ValueError:
+            lib = (0, 0)
+        expect_mode = "tcx" if kernel_at_least(6, 6) and lib >= (1, 3) else "tc"
+    check("attach mode", expect_mode == "any" and snap["attach"]["mode"] in ("tcx", "tc")
+          or snap["attach"]["mode"] == expect_mode, "{} (expected {})".format(snap["attach"]["mode"], expect_mode))
     check("drop tracepoint", args.expect_drops == "any"
           or snap["attach"]["drop_tracepoint"] == args.expect_drops,
           snap["attach"]["drop_tracepoint"])
@@ -144,9 +152,14 @@ def main():
 
     esp = find_flows(snap, proto=50, local=args.device, remote=args.server)
     check("esp observed", len(esp) == 1 and esp[0]["tx"]["packets"] == 3)
+    # ICMP is keyed without its type, so the flow also holds the server's
+    # port unreachable for the TTL-63 datagram (sent to a closed port),
+    # unless rate limiting suppressed it. ESP gets no reply: the server
+    # accepts it.
     icmp = find_flows(snap, proto=1, local=args.device, remote=args.server)
+    icmp_rx = icmp[0]["rx"]["packets"] if len(icmp) == 1 else None
     check("icmp echo observed", len(icmp) == 1 and icmp[0]["tx"]["packets"] == 3
-          and icmp[0]["rx"]["packets"] == 3)
+          and 3 <= icmp_rx <= 4, "rx {}".format(icmp_rx))
 
     protos = {(p["direction"], p["proto"]): p["packets"] for p in snap["protocols"]}
     check("protocol table has esp", protos.get(("tx", 50)) == 3)
@@ -179,6 +192,12 @@ def main():
             closed6 = [d for d in drops if d["family"] == 6 and d["remote"] == args.router6
                        and d["remote_port"] == args.closed_port]
             check("ipv6 drop keyed", sum(d["count"] for d in closed6) >= 3, json.dumps(closed6))
+        # A packet from the device is keyed by its destination, one to it by
+        # its source; neither is the device itself. Such a key would be a drop
+        # in another namespace attributed to this interface.
+        own = {a for a in (args.device, args.device6) if a}
+        misplaced = [d for d in drops if d["remote"] in own]
+        check("no drop keyed to the device's own address", not misplaced, json.dumps(misplaced))
         for d in sorted(drops, key=lambda d: -d["count"]):
             print("     drop {:>4} x {} {} {}:{}".format(d["count"], d["reason_name"] or d["reason"],
                                                        d["direction"], d["remote"], d["remote_port"]))

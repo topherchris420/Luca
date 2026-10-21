@@ -87,28 +87,26 @@ jobs:
           if-no-files-found: ignore
 
   debian:
-    name: Debian ${{ matrix.release }} toolchain (host kernel)
+    name: Debian bookworm, ${{ matrix.libbpf }} libbpf (host kernel)
     runs-on: ubuntu-24.04
     container:
-      image: debian:${{ matrix.release }}
+      image: debian:bookworm
       options: --privileged
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - release: bookworm
-            clang: clang
-          # bullseye's default clang (11) predates the CO-RE type checks
-          - release: bullseye
-            clang: clang-13
+        # system: Debian's libbpf 1.1 (no tcx, clsact fallback);
+        # vendored: the pinned libbpf built from source (tcx).
+        # Debian 11 is end of life and no longer installable here.
+        libbpf: [system, vendored]
     steps:
       - name: Packages
-        run: apt-get update && apt-get install -y $BUILD_DEPS ${{ matrix.clang }} python3 ca-certificates procps
+        run: apt-get update && apt-get install -y $BUILD_DEPS python3 ca-certificates procps
       - uses: actions/checkout@v4
-      - name: Build with the distribution's libbpf (vendored if too old)
+      - name: Build
         run: |
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          make -C observatory CLANG=${{ matrix.clang }}
+          make -C observatory LIBBPF=${{ matrix.libbpf }}
       - name: Unit tests with the distribution's Python
         run: python3 -m unittest discover -s observatory/tests -p "test_*.py"
       - name: Kernel smoke test
@@ -116,7 +114,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: smoke-debian-${{ matrix.release }}
+          name: smoke-debian-bookworm-${{ matrix.libbpf }}
           path: smoke-out
           if-no-files-found: ignore
 

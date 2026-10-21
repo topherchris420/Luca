@@ -26,7 +26,7 @@ check_config() {
         say "$1" "unknown (no /proc/config.gz or /boot/config-*)"
         return
     fi
-    if printf '%s\n' "$CONFIG" | grep -Eq "^$1=(y|m)"; then
+    if printf '%s\n' "$CONFIG" | grep -E "^$1=(y|m)" >/dev/null; then
         say "$1" "yes ($2)"
     elif [ "$3" = "required" ]; then
         say "$1" "MISSING ($2)"

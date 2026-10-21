@@ -71,8 +71,17 @@ struct net_device___luca {
 	possible_net_t___luca nd_net; /* empty without CONFIG_NET_NS */
 } __attribute__((preserve_access_index));
 
+struct sock_common___luca {
+	possible_net_t___luca skc_net;
+} __attribute__((preserve_access_index));
+
+struct sock___luca {
+	struct sock_common___luca __sk_common;
+} __attribute__((preserve_access_index));
+
 struct sk_buff___luca {
 	struct net_device___luca *dev;
+	struct sock___luca *sk;
 	int skb_iif;
 	unsigned char *head;
 	__u16 network_header;
@@ -167,12 +176,22 @@ int luca_kfree_skb(struct bpf_raw_tracepoint_args *ctx)
 	else
 		return 0;
 
-	/* An ifindex is only unique within a network namespace. A forwarded
-	 * packet stays in the namespace it arrived in, so skb->dev's
-	 * namespace identifies it in both directions. */
-	if (cfg->netns_ino && dev && bpf_core_field_exists(dev->nd_net.net) &&
-	    BPF_CORE_READ(dev, nd_net.net, ns.inum) != cfg->netns_ino)
-		return 0;
+	/* An ifindex is only unique within a network namespace, so the
+	 * packet must be in ours: skb->dev's namespace (a forwarded packet
+	 * stays in the namespace it arrived in) or, once a socket has queued
+	 * the packet and cleared skb->dev, the socket's. A packet with
+	 * neither cannot be placed and is not attributed. */
+	if (cfg->netns_ino && bpf_core_field_exists(dev->nd_net.net)) {
+		struct sock___luca *sk = BPF_CORE_READ(skb, sk);
+		unsigned int inum = 0;
+
+		if (dev)
+			inum = BPF_CORE_READ(dev, nd_net.net, ns.inum);
+		else if (sk)
+			inum = BPF_CORE_READ(sk, __sk_common.skc_net.net, ns.inum);
+		if (inum != cfg->netns_ino)
+			return 0;
+	}
 
 	if (bpf_core_type_exists(enum skb_drop_reason___luca))
 		key.reason = (__u32)ctx->args[2];

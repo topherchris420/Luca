@@ -17,6 +17,7 @@ import threading
 import time
 
 SCENARIOS = ("benign", "icmp", "tunnel", "forwarded", "spoof", "twostacks", "udpflows", "echo", "drops")
+IPPROTO_ESP = 50
 
 
 def checksum(data):
@@ -47,11 +48,19 @@ def serve(args):
     bulk = listener(args.bind, args.tcp_port + 1)
     udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     udp.bind((args.bind, args.udp_port))
+    # Accept ESP like a tunnel endpoint would. Without a receiver the kernel
+    # answers every ESP packet with ICMP protocol unreachable, which would
+    # add ICMP to the scenarios that send ESP.
+    esp = socket.socket(socket.AF_INET, socket.SOCK_RAW, IPPROTO_ESP)
 
     def udp_echo():
         while True:
             data, peer = udp.recvfrom(4096)
             udp.sendto(data, peer)
+
+    def esp_sink():
+        while True:
+            esp.recv(65536)
 
     def respond(conn):
         with conn:
@@ -71,6 +80,7 @@ def serve(args):
                 pass
 
     threading.Thread(target=udp_echo, daemon=True).start()
+    threading.Thread(target=esp_sink, daemon=True).start()
     threading.Thread(target=accept_loop, args=(bulk, stream), daemon=True).start()
     if args.ready:
         open(args.ready, "w").close()
@@ -97,13 +107,15 @@ def tcp_exchange(server, port, ttl=None):
     return received
 
 
-def udp_echo(server, port, count, source=None, gap=0.0):
+def udp_echo(server, port, count, source=None, gap=0.0, ttl=None):
     """
         :return: list of round-trip times in microseconds (None when lost).
     """
     u = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     if source:
         u.bind((source, 0))
+    if ttl:
+        u.setsockopt(socket.IPPROTO_IP, socket.IP_TTL, ttl)
     u.settimeout(1)
     rtts = []
     with u:
@@ -132,7 +144,7 @@ def icmp_echo(server, count):
 
 
 def esp_packets(server, count):
-    esp = socket.socket(socket.AF_INET, socket.SOCK_RAW, 50)
+    esp = socket.socket(socket.AF_INET, socket.SOCK_RAW, IPPROTO_ESP)
     with esp:
         for seq in range(1, count + 1):
             esp.sendto(struct.pack("!II", 0x4c55, seq) + b"\0" * 24, (server, 0))
@@ -186,11 +198,9 @@ def scenario(args):
     elif args.name == "tunnel":
         esp_packets(args.server, 5)
     elif args.name == "forwarded":
-        t = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        t.setsockopt(socket.IPPROTO_IP, socket.IP_TTL, 63)
-        for _ in range(3):
-            t.sendto(b"ttl", (args.server, args.udp_port + 1))
-        t.close()
+        # Answered round trips: a closed port would add ICMP errors, and
+        # replies to a closed socket would make the device send ICMP.
+        done["udp_echoed_ttl63"] = sum(x is not None for x in udp_echo(args.server, args.udp_port, 3, ttl=63))
     elif args.name == "spoof":
         f = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         f.bind((args.foreign_source, 0))
@@ -263,7 +273,7 @@ def client(args):
     f.sendto(b"src", (args.server, args.udp_port + 2))
 
     # IPsec ESP (IP protocol 50), which a "tcp or udp" capture excludes.
-    esp = socket.socket(socket.AF_INET, socket.SOCK_RAW, 50)
+    esp = socket.socket(socket.AF_INET, socket.SOCK_RAW, IPPROTO_ESP)
     for seq in range(1, 4):
         esp.sendto(struct.pack("!II", 0x4c55, seq) + b"\0" * 24, (args.server, 0))
 

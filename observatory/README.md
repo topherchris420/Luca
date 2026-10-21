@@ -119,7 +119,7 @@ the device from TTL values (INFERRED).
 | Named drop reasons | 5.17 | needs `/sys/kernel/btf/vmlinux` (`CONFIG_DEBUG_INFO_BTF`) or `btf:` |
 | TCX attachment | 6.6 and libbpf 1.3 | otherwise `clsact`; `attach: tc` forces it |
 | libbpf | 0.6 | older or missing: `make` builds a pinned libbpf 1.5.0 statically |
-| Build | clang ≥ 12 (BPF target), gcc, make, pkg-config, libelf, zlib | only when the observatory is installed; on Debian 11 install `clang-13` and run the installer with `CLANG=clang-13` |
+| Build | clang ≥ 12 (BPF target), gcc, make, pkg-config, libelf, zlib | only when the observatory is installed; if the default clang is older, install a newer one and run the installer with `CLANG=clang-NN` |
 
 `sh scripts/check-host.sh` reports, without attaching anything, which of
 these the host provides. Kernel lockdown in `confidentiality` mode forbids

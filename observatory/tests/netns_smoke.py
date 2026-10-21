@@ -112,11 +112,12 @@ def main():
 
             print("collector exit {}; checking {}".format(code, snap_path))
             check = subprocess.run([sys.executable, os.path.join(HERE, "check_snapshot.py"), snap_path,
-                                    "--device", netns.DEVICE, "--server", netns.SERVER, "--router", netns.AP,
+                                    "--device", netns.DEVICE, "--device6", netns.DEVICE6,
+                                    "--server", netns.SERVER, "--router", netns.AP,
                                     "--router6", netns.AP6, "--foreign", netns.FOREIGN,
                                     "--dev-tx", str(after["tx_packets"] - before["tx_packets"]),
                                     "--dev-rx", str(after["rx_packets"] - before["rx_packets"]),
-                                    "--expect-mode", args.attach if args.attach != "auto" else "any",
+                                    "--expect-mode", args.attach,
                                     "--expect-drops", args.expect_drops])
             if check.returncode != 0:
                 failures.append("snapshot checks")

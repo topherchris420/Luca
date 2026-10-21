@@ -31,7 +31,8 @@ build() {
     ok "collector built in $OBS_DIR/build"
 }
 
-install() {
+# Not named install(): a function of that name would shadow install(1) below.
+install_observatory() {
     if [[ "$(uname -s)" != "Linux" ]]; then
         echo "The kernel observatory needs Linux." >&2
         exit 1
@@ -60,7 +61,7 @@ install() {
     echo "    After changing those settings, run: sudo systemctl restart luca-observatory"
 }
 
-uninstall() {
+uninstall_observatory() {
     info "Removing the luca-observatory service"
     if [[ -f "$UNIT" ]]; then
         systemctl disable --now luca-observatory &>/dev/null || true
@@ -81,8 +82,8 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 case "${1:-}" in
-    "") install ;;
+    "") install_observatory ;;
     --rebuild) build; systemctl try-restart luca-observatory || true ;;
-    --uninstall) uninstall ;;
+    --uninstall) uninstall_observatory ;;
     *) echo "usage: $0 [--rebuild|--uninstall]" >&2; exit 1 ;;
 esac

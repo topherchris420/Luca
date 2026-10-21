@@ -13,8 +13,8 @@
 #
 # Requirements: clang >= 12 (BPF target; CO-RE type checks), a C compiler,
 # make, pkg-config, libelf and zlib headers, Linux UAPI headers; git only for
-# LIBBPF=vendored. Where the default clang is older (Debian 11), install a
-# newer one and pass it, e.g. make CLANG=clang-13.
+# LIBBPF=vendored. Where the default clang is older, install a newer one
+# and pass it, e.g. make CLANG=clang-15.
 
 OUTPUT     ?= build
 CLANG      ?= clang
