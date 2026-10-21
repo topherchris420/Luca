@@ -206,7 +206,8 @@ class Correlator(object):
                      "ends at the last snapshot, {}.".format(status, _fmt_time((snap.get("clock") or {}).get("realtime"))),
                      ["kernel.tc", "observatory.session"], sev + ([_ev("observatory.session", sfile, "/", sess)] if sess else []))
         attach = snap.get("attach") or {}
-        if attach.get("drop_tracepoint") != "attached":
+        # A failed collector never loaded the drop program; the failure above says so.
+        if attach.get("drop_tracepoint") != "attached" and status != "failed":
             self.add(UNAVAILABLE, MISSING, "Kernel drop reasons are {} on this host{}.".format(
                 attach.get("drop_tracepoint") or "unavailable",
                 ": " + attach["drop_note"] if attach.get("drop_note") else ""),
@@ -745,8 +746,10 @@ class Correlator(object):
         unsupported = list(UNSUPPORTED)
         attach = (self.snap or {}).get("attach") or {}
         if attach.get("drop_tracepoint") not in (None, "attached"):
+            failed = (self.snap or {}).get("status") == "failed"
             unsupported.append({"conclusion": "Why packets were dropped on this host",
-                                "reason": "kernel drop events are {}".format(attach.get("drop_tracepoint"))})
+                                "reason": "the collector failed" if failed else
+                                "kernel drop events are {}".format(attach.get("drop_tracepoint"))})
         limitations = list(self.limitations) + [
             "Corroboration means two collection paths inside the same host kernel agree: the TC classifier "
             "and the AF_PACKET capture. Both depend on the configured interface being the access point.",

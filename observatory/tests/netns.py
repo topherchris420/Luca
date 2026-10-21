@@ -112,9 +112,13 @@ class Topology(object):
             if not shutil.which("iptables") and not shutil.which("nft"):
                 raise CommandError("NAT needs iptables or nft")
             if shutil.which("nft"):
-                rules = ("table ip lucanat { chain post { type nat hook postrouting priority 100; "
-                         "oifname \"up0\" masquerade; } }")
-                run(["ip", "netns", "exec", self.ap, "nft", rules])
+                rules = ("table ip lucanat {\n"
+                         "  chain post {\n"
+                         "    type nat hook postrouting priority 100;\n"
+                         "    oifname \"up0\" masquerade\n"
+                         "  }\n"
+                         "}\n")
+                run(["ip", "netns", "exec", self.ap, "nft", "-f", "-"], input=rules.encode())
             else:
                 run(["ip", "netns", "exec", self.ap, "iptables", "-t", "nat", "-A", "POSTROUTING", "-o", "up0",
                      "-j", "MASQUERADE"])

@@ -261,6 +261,12 @@ class MissingTelemetryTest(unittest.TestCase):
         s = run(packets, snap=snap)
         self.assertTrue(find(s, "Operation not permitted", MISSING))
         self.assertFalse([o for o in s["observations"] if o["label"] == CORRELATED])
+        # The drop program was never loaded: not "disabled", and not a second statement.
+        snap["attach"]["drop_tracepoint"] = "disabled"
+        s = run(packets, snap=snap)
+        self.assertFalse(find(s, "Kernel drop reasons are", MISSING))
+        self.assertIn({"conclusion": "Why packets were dropped on this host", "reason": "the collector failed"},
+                      s["unsupported"])
 
     def test_crashed_collector(self):
         s = run(status="running")

@@ -18,6 +18,7 @@ import textwrap
 import threading
 import unittest
 import zipfile
+from unittest import mock
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
@@ -153,6 +154,32 @@ class ClientProtocolTest(unittest.TestCase):
         self.assertEqual(rec["exit_code"], 0)
         with open(os.path.join(assets, "observatory.json")) as f:
             self.assertEqual(json.load(f)["session"], "ABCDEF12")
+
+
+@unittest.skipUnless(POSIX, "needs Unix domain sockets")
+class ReadinessTest(unittest.TestCase):
+    """
+        Type=notify: the service tells systemd when its socket listens.
+    """
+
+    def test_notifies_systemd(self):
+        tmp = tempfile.mkdtemp()
+        path = os.path.join(tmp, "notify")
+        sink = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+        with sink:
+            sink.bind(path)
+            sink.settimeout(2)
+            with mock.patch.dict(os.environ, {"NOTIFY_SOCKET": path}):
+                self.assertTrue(daemon.notify_ready("listening"))
+            self.assertEqual(sink.recv(256), b"READY=1\nSTATUS=listening")
+
+    def test_outside_systemd_does_nothing(self):
+        with mock.patch.dict(os.environ, {}, clear=True):
+            self.assertFalse(daemon.notify_ready())
+
+    def test_unreachable_notify_socket_is_not_fatal(self):
+        with mock.patch.dict(os.environ, {"NOTIFY_SOCKET": "/nonexistent/notify"}):
+            self.assertFalse(daemon.notify_ready())
 
 
 @unittest.skipUnless(LINUX, "the service supervises Linux processes and checks SO_PEERCRED")

@@ -70,7 +70,8 @@ def tool(name, *alternatives):
 def first_line(args):
     try:
         p = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=20)
-        out = p.stdout.decode("utf-8", "replace").strip().splitlines()
+        out = [l for l in p.stdout.decode("utf-8", "replace").strip().splitlines()
+               if not l.startswith("Running as user")]  # TShark's warning when run as root
         return out[0] if out else None
     except (OSError, subprocess.TimeoutExpired):
         return None
@@ -144,36 +145,56 @@ def verdict(criteria):
 class Capture(object):
     """
         TShark (as Luca's capture.py runs it) or tcpdump on one interface of
-        the access point namespace, with Luca's filter.
+        the access point namespace, with Luca's filter. The file is written
+        under /tmp, where Luca captures too (a capture tool may be confined
+        to such paths), and copied into the evidence when the capture stops.
     """
 
     def __init__(self, runner, topo, iface, path):
         self.runner, self.topo, self.iface, self.path = runner, topo, iface, path
+        self.work = os.path.join(runner.scratch("capture-" + os.path.basename(os.path.dirname(path))),
+                                 "capture.pcap")
         self.proc = None
         self.tool = None
+        self.failures = []
+
+    def command(self, tool):
+        if tool == "tshark":
+            return [self.runner.tools["tshark"], "-i", self.iface, "-w", self.work, "-f", "tcp or udp", "-q"]
+        return [self.runner.tools["tcpdump"], "-i", self.iface, "-w", self.work, "-U", "-n", "-Z", "root",
+                "tcp or udp"]
 
     def start(self):
-        if self.runner.tools["tshark"]:
-            self.tool = "tshark"
-            cmd = [self.runner.tools["tshark"], "-i", self.iface, "-w", self.path, "-f", "tcp or udp", "-q"]
-        elif self.runner.tools["tcpdump"]:
-            self.tool = "tcpdump"
-            cmd = [self.runner.tools["tcpdump"], "-i", self.iface, "-w", self.path, "-U", "-n", "-Z", "root",
-                   "tcp or udp"]
-        else:
-            return False
-        self.log_path = self.path + ".log"
-        self.log = open(self.log_path, "wb")
-        self.proc = self.topo.popen(self.topo.ap, cmd, stdout=self.log, stderr=subprocess.STDOUT)
-        deadline = time.time() + 15
-        while time.time() < deadline and self.proc.poll() is None:
-            with open(self.log_path, "rb") as f:
-                text = f.read()
-            if b"Capturing on" in text or b"listening on" in text:
-                time.sleep(0.5)
+        for tool in ("tshark", "tcpdump"):
+            if self.runner.tools[tool] and self.launch(tool):
+                self.tool = tool
                 return True
+        return False
+
+    def launch(self, tool):
+        log_path = "{}.{}.log".format(self.work, tool)
+        log = open(log_path, "wb")
+        proc = self.topo.popen(self.topo.ap, self.command(tool), stdout=log, stderr=subprocess.STDOUT)
+        listening = False
+        deadline = time.time() + 15
+        while time.time() < deadline and proc.poll() is None and not listening:
+            with open(log_path, "rb") as f:
+                text = f.read()
+            listening = b"Capturing on" in text or b"listening on" in text
             time.sleep(0.1)
-        return self.proc.poll() is None
+        # A tool that cannot open its output announces the capture, then exits.
+        time.sleep(1.0)
+        if listening and proc.poll() is None:
+            self.proc, self.log, self.log_path = proc, log, log_path
+            return True
+        if proc.poll() is None:
+            proc.kill()
+            proc.wait()
+        log.close()
+        with open(log_path, "rb") as f:
+            self.failures.append({"tool": tool, "exit_code": proc.returncode,
+                                  "log": f.read().decode("utf-8", "replace")[-1000:]})
+        return False
 
     def stop(self):
         if self.proc is None:
@@ -186,6 +207,9 @@ class Capture(object):
                 self.proc.kill()
                 self.proc.wait()
         self.log.close()
+        if os.path.exists(self.work):
+            shutil.copyfile(self.work, self.path)
+        shutil.copyfile(self.log_path, self.path + ".log")
         return self.proc.returncode
 
 
@@ -343,6 +367,7 @@ class Runner(object):
         if cap is not None:
             rec["capture_started"] = cap.start()
             rec["capture_tool"] = cap.tool
+            rec["capture_failures"] = cap.failures
         build = os.path.join(self.unpriv_obs, "build") if transient else self.build
         args = self.collector_args(build, iface, out, ready, attach, interval, flush, extra)
         unit = None
@@ -430,6 +455,7 @@ class Runner(object):
                 "attach": snap.get("attach"), "loss": snapmod.loss_report(snap) if snap else None,
                 "coverage": (summ.get("coverage") or {}).get("assessment"), "counts": summ.get("counts"),
                 "capture_packets": rec["capture"].packets if rec.get("capture") is not None else None,
+                "capture_tool": rec.get("capture_tool"), "capture_failures": rec.get("capture_failures") or None,
                 "duration_s": round(rec["finished_at"] - rec["started_at"], 3)}
 
     # ---------------------------------------------------------- experiments

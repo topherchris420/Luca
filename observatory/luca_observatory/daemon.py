@@ -51,6 +51,29 @@ def log(msg):
     sys.stderr.flush()
 
 
+def notify_ready(status=None):
+    """
+        Tells systemd (Type=notify) that the service is ready, so that
+        "systemctl start" returns only once the socket accepts requests.
+        Does nothing outside systemd.
+        :return: True if systemd was notified
+    """
+    path = os.environ.get("NOTIFY_SOCKET")
+    if not path:
+        return False
+    if path.startswith("@"):
+        path = "\0" + path[1:]  # abstract namespace
+    msg = "READY=1" + ("\nSTATUS=" + status if status else "")
+    try:
+        s = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+        with s:
+            s.sendto(msg.encode(), path)
+        return True
+    except OSError as e:
+        log("cannot notify systemd: {}".format(e))
+        return False
+
+
 def write_json(path, data, mode=0o640):
     tmp = path + ".tmp"
     with open(tmp, "w") as f:
@@ -420,6 +443,7 @@ class Service(object):
         srv.bind(self.socket_path)
         os.chmod(self.socket_path, 0o660)
         srv.listen(8)
+        notify_ready("listening on {}".format(self.socket_path))
 
         def on_signal(sig, frame):
             self.stopping = True
@@ -483,6 +507,7 @@ def main(argv=None):
         return 2
     if not (doc.get("settings") or {}).get("enabled"):
         log("observatory.enabled is false in config.yaml; nothing to do")
+        notify_ready("disabled in config.yaml")  # a clean start and exit, not a failed one
         return 0
     os.umask(0o027)
     return Service(doc, args.socket, args.spool, args.collector, args.bpf_dir, args.collector_arg).serve()

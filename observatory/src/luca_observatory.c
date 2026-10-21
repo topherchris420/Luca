@@ -789,7 +789,7 @@ static struct bpf_object *open_object(struct observatory *o, const char *name,
 	snprintf(path, sizeof(path), "%s/%s", o->bpf_dir, name);
 	obj = bpf_object__open_file(path, &opts);
 	if (!obj)
-		snprintf(err_buf, err_len, "cannot open %s: %s", path, strerror(errno));
+		snprintf(err_buf, err_len, "cannot open %.400s: %s", path, strerror(errno));
 	return obj;
 }
 

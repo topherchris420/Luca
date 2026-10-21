@@ -11,7 +11,9 @@ Documentation=file:///usr/share/luca/observatory/README.md
 After=network.target
 
 [Service]
-Type=simple
+# The service reports readiness once its socket is listening, so
+# "systemctl start" returns when it can serve requests.
+Type=notify
 User=luca-observatory
 Group=luca-observatory
 
