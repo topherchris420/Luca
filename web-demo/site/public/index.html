@@ -24,6 +24,11 @@
     h3{font-size:17px;margin:0}.finding p{color:#bfcdc9;font-size:14px;line-height:1.55;margin:9px 0 0}.finding .context{color:#96bfb7;font-size:12px}
     .tag{text-transform:uppercase;font-weight:700;font-size:10px;border-radius:5px;padding:6px 9px;letter-spacing:.05em}
     .moderate{background:#44361e;color:#ffda9c}.low{background:#15393c;color:#9ee0e6}
+    .notice{background:#2b2412;border:1px solid #6b5520;color:#ffe2a6;border-radius:9px;padding:12px 15px;font-size:13px;line-height:1.5;margin-bottom:12px}
+    .prov{text-transform:uppercase;font-weight:800;font-size:10px;border-radius:4px;padding:4px 7px;letter-spacing:.05em;white-space:nowrap;border:1px solid transparent}
+    .prov-observed{background:#163a66;color:#b9d6ff}.prov-correlated{background:#17421c;color:#b6f0bd}
+    .prov-inferred{background:#4a3a0c;color:#ffe08a}.prov-unavailable{background:transparent;border-color:#5d7570;color:#b4c7c2}
+    #observatory{display:grid;gap:10px}#observatory .finding p{margin-top:7px}.legend{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
     footer{border-top:1px solid #254349;margin-top:40px;padding-top:21px;font-size:13px;line-height:1.6;color:#9db4ad}
     @media(max-width:700px){.metrics{grid-template-columns:repeat(2,1fr)}.section{align-items:start;flex-direction:column}header{padding:19px 0}.hero{padding-top:40px}}
   </style>
@@ -47,6 +52,10 @@
       </div>
       <div class="section"><h2>What might deserve a closer look?</h2><span class="meta">Example smartphone · Fictional session</span></div>
       <div id="findings" aria-live="polite"></div>
+      <div class="section"><h2>Kernel Observatory · offline example</h2><span class="meta" id="obs-status" role="status">Loading example…</span></div>
+      <div class="notice"><strong>Synthetic offline example.</strong> Computed from invented packets; no kernel, network or device was observed. On a real Luca host an optional Linux collector adds kernel-level counts that are correlated with the capture, and every statement is labelled by how it is known.</div>
+      <div class="legend"><span class="prov prov-observed">observed</span><span class="prov prov-correlated">correlated</span><span class="prov prov-inferred">inferred</span><span class="prov prov-unavailable">unavailable</span></div>
+      <div id="observatory" aria-live="polite"></div>
       <footer><strong>Demonstration only:</strong> Luca's Vercel site does not capture traffic, access visitor devices, control Wi-Fi, or detect real compromises. Every number and finding here is invented solely to demonstrate the interface. Real inspections require a separate authorized Linux monitoring installation. A finding is evidence to investigate, not proof of compromise.</footer>
     </main>
   </div>
@@ -86,7 +95,34 @@
           el('findings').replaceChildren(textNode('p','meta','This website never performs live scans.'));
         }
       }
+      async function loadObservatory() {
+        const target=el('observatory');
+        try {
+          const response=await fetch('/api/observatory/example',{headers:{Accept:'application/json'}});
+          if(!response.ok) throw Error('Example unavailable');
+          const data=await response.json();
+          if(data.mode!=='demo'||data.synthetic!==true) throw Error('Unexpected API response');
+          const labels=['OBSERVED','CORRELATED','INFERRED','UNAVAILABLE'];
+          target.replaceChildren();
+          for(const o of data.observations.slice(0,8)) {
+            const label=labels.includes(o.label)?o.label:'UNAVAILABLE';
+            const card=textNode('article','finding','');
+            const top=textNode('div','top','');
+            top.append(textNode('h3','',o.category.replace('_',' ')));
+            top.append(textNode('span','prov prov-'+label.toLowerCase(),label));
+            card.append(top,textNode('p','',o.statement));
+            if(o.reasons.length) card.append(textNode('p','context',o.reasons.join(' · ')));
+            target.append(card);
+          }
+          for(const u of data.unsupported.slice(0,2)) target.append(textNode('p','meta','Not supported by this evidence: '+u.conclusion+' ('+u.reason+')'));
+          el('obs-status').textContent='Example loaded · capture '+data.coverage.assessment;
+        } catch(e) {
+          el('obs-status').textContent='Example unavailable';
+          target.replaceChildren(textNode('p','meta','The offline example could not be loaded.'));
+        }
+      }
       load();
+      loadObservatory();
     })();
   </script>
 </body>

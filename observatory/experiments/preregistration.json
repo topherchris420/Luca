@@ -1,0 +1,85 @@
+{
+  "schema": "luca.observatory.preregistration/1",
+  "title": "Luca Kernel-Native Network Observatory: coverage, overhead, correlation, anomaly evidence, failure handling",
+  "registered_at": "2026-10-20",
+  "registered_before_measurement": true,
+  "statement": "These questions, procedures, metrics and pass thresholds were written before any experiment was run. run_experiments.py reads the thresholds from this file and records its SHA-256 in every result. Any later change must be appended to amendments with its date and reason; results produced under an earlier version keep that version's digest.",
+  "amendments": [],
+  "scope": {
+    "environment": "Three Linux network namespaces joined by veth pairs on one host (tests/netns.py): a device, an access point running the collector and the capture, and a remote network. In CI this host is a virtual machine.",
+    "applies_to": "The kernel, libbpf build and virtual topology recorded in each result.",
+    "does_not_apply_to": "Wi-Fi hardware, hostapd, real device populations or production traffic. veth devices have no radio, different offloads and no driver queues of a wireless card.",
+    "synthetic_fixtures": "Unit-test fixtures are never used as experimental results."
+  },
+  "tools": {
+    "capture": "tshark if installed, otherwise tcpdump; filter \"tcp or udp\" as in Luca's capture.py",
+    "zeek": "zeek -C -r capture.pcap when installed; criteria that need it are reported not_evaluable otherwise",
+    "editcap": "used only by C4 to delete a known number of packets from a copy of a capture"
+  },
+  "experiments": {
+    "A": {
+      "title": "Detection coverage",
+      "question": "Which ground-truth traffic classes does each telemetry path record: the TC classifiers, the kfree_skb drop program and the TShark capture with Luca's filter?",
+      "procedure": "One session: collector (attach auto, 0.5 s sampling) and capture on ap0; the device runs tests/traffic.py client, which generates 3 TCP connections, 20 UDP echoes, a UDP datagram with TTL 63, a UDP datagram from an unassigned source (dropped by rp_filter), 3 ESP packets, 3 ICMP echoes, 3 UDP datagrams and 1 TCP SYN to closed ports of the access point, and 3 IPv6 UDP datagrams to a closed port.",
+      "criteria": [
+        {"id": "A1", "statement": "The kernel classifiers record all 7 packet classes (tcp, udp, ttl63, foreign_source, esp, icmp, ipv6) with their generated packet counts.", "metric": "kernel_classes_recorded_fraction", "op": ">=", "threshold": 1.0},
+        {"id": "A2", "statement": "The capture records the TCP/UDP classes (tcp, udp, ttl63, foreign_source, ipv6) and none of esp and icmp.", "metric": "capture_matches_filter", "op": "==", "threshold": true},
+        {"id": "A3", "statement": "When the drop program attaches, the closed-port UDP drops (>= 3) and the rp_filter drop (>= 1) are keyed; on kernels >= 5.17 they are named NO_SOCKET and IP_RPFILTER. Not evaluable when the drop program does not attach.", "metric": "drops_keyed_and_named", "op": "==", "threshold": true},
+        {"id": "A4", "statement": "Per-direction socket-buffer counts on ap0 equal the device veth's tx/rx packet counters within 3 packets.", "metric": "max_counter_difference", "op": "<=", "threshold": 3}
+      ],
+      "descriptive": ["number of ground-truth classes visible only in kernel telemetry"]
+    },
+    "B": {
+      "title": "Overhead",
+      "question": "What does the collector cost the forwarding path and the host?",
+      "procedure": "5 repetitions of each condition, interleaved (baseline, collector, baseline, ...). Each repetition: a 5 s TCP bulk download from the remote network to the device (throughput at the receiver), then 2000 sequential UDP request/response round trips (latency at the device). Collector condition: attach auto, default limits, 1 s sampling, BPF run-time statistics off. A separate session with --prog-stats measures the per-invocation cost of the programs.",
+      "criteria": [
+        {"id": "B1", "statement": "Median TCP throughput with the collector is at least 90 % of the baseline median.", "metric": "throughput_ratio_median", "op": ">=", "threshold": 0.9},
+        {"id": "B2", "statement": "The median of per-repetition median UDP round-trip times rises by at most 25 microseconds.", "metric": "rtt_median_increase_us", "op": "<=", "threshold": 25},
+        {"id": "B3", "statement": "No collector repetition loses telemetry: flows_not_recorded, drops_not_keyed, parse_errors and snapshot_failures are 0 and the timeline is not truncated.", "metric": "telemetry_loss_events", "op": "==", "threshold": 0},
+        {"id": "B4a", "statement": "Collector CPU time is at most 2 % of the session's wall-clock time in every repetition.", "metric": "collector_cpu_fraction_max", "op": "<=", "threshold": 0.02},
+        {"id": "B4b", "statement": "Collector maximum resident set size is at most 65536 kB in every repetition.", "metric": "collector_max_rss_kb_max", "op": "<=", "threshold": 65536},
+        {"id": "B4c", "statement": "BPF map memory is at most 64 MiB at default limits.", "metric": "map_memlock_bytes_max", "op": "<=", "threshold": 67108864}
+      ],
+      "descriptive": ["mean BPF run time per invocation of each program (BPF_ENABLE_STATS)", "p90 and p99 round-trip times", "throughput and latency of every repetition"]
+    },
+    "C": {
+      "title": "Correlation",
+      "question": "How do kernel observations correlate with the capture and Zeek, and does the correlator stay conservative where it cannot be sure?",
+      "procedure": "C1-C2 use experiment A's session with Zeek. C3 uses a NAT session: the access point masquerades traffic leaving through up0, the collector observes up0 (allowlisted uplink) and the capture observes ap0; the device runs tests/traffic.py client. C4 uses a paced UDP echo session (200 round trips, 10 ms apart) and deletes 20 consecutive packets lying between two kernel samples from a copy of its capture with editcap.",
+      "criteria": [
+        {"id": "C1", "statement": "Every TCP/UDP flow the device initiated in session A is CORRELATED and corroborated; no correlation is ambiguous and no flow is capture-only.", "metric": "ground_truth_flows_corroborated_fraction", "op": ">=", "threshold": 1.0},
+        {"id": "C2", "statement": "Every kernel-only observation states a reason, and the ESP and ICMP observations name the capture filter.", "metric": "kernel_only_reasons_complete", "op": "==", "threshold": true},
+        {"id": "C3", "statement": "Across the NAT boundary no Zeek connection is matched to a kernel flow with a different remote endpoint, and no match is labelled corroborated.", "metric": "nat_false_certainty", "op": "==", "threshold": 0},
+        {"id": "C4a", "statement": "The unedited capture of the paced session is assessed consistent.", "metric": "unedited_assessment_consistent", "op": "==", "threshold": true},
+        {"id": "C4b", "statement": "After deleting k = 20 packets between two kernel samples, the assessment is incomplete and the proven loss is between 1 and k.", "metric": "loss_detected_within_bounds", "op": "==", "threshold": true}
+      ],
+      "descriptive": ["corroborated, uncertain, ambiguous, kernel-only and capture-only counts per session", "unique remote-only match rate across NAT"]
+    },
+    "D": {
+      "title": "Anomaly evidence on labeled scenarios",
+      "question": "Do the KNO heuristics fire on real kernel data exactly where the scenario's label says, with the provenance the design assigns?",
+      "procedure": "Six sessions, one per tests/traffic.py scenario, each starting with the same benign TCP/UDP baseline: benign (adds ICMP to the access point itself), icmp (ICMP echo to a remote host), tunnel (ESP), forwarded (UDP with TTL 63), spoof (UDP from an unassigned source), twostacks (TCP with initial TTL 128). Expected findings: none, KNO-01, KNO-02, KNO-03, KNO-04, KNO-05.",
+      "criteria": [
+        {"id": "D1", "statement": "Every labeled finding is produced in its scenario (recall 1.0 over the 5 positive labels).", "metric": "recall", "op": ">=", "threshold": 1.0},
+        {"id": "D2", "statement": "No finding is produced outside a scenario's label set (0 false positives over the 6 scenarios).", "metric": "false_positives", "op": "==", "threshold": 0},
+        {"id": "D3", "statement": "KNO-03 and KNO-05 are INFERRED; KNO-01, KNO-02 and KNO-04 are OBSERVED.", "metric": "provenance_as_designed", "op": "==", "threshold": true}
+      ],
+      "limitations": ["Designed scenarios show that the rules fire as specified on kernel data. They do not estimate false-positive or false-negative rates on real devices."]
+    },
+    "E": {
+      "title": "Failure and recovery",
+      "question": "When kernel instrumentation fails, does Luca's capture keep working, and is the loss reported instead of hidden?",
+      "procedure": "Separate sessions, each with a concurrent root capture where noted: E1 collector run as user nobody without capabilities, during a 100-round-trip UDP echo (captured); E2 collector run as user nobody with only CAP_BPF, CAP_NET_ADMIN and CAP_PERFMON; E3 collector given a BTF path that does not exist; E4 --max-flows 32 --max-drops 8 with 200 distinct UDP flows and 50 distinct closed ports; E5 ap0 deleted during collection; E6 collector killed with SIGKILL during a captured echo, in tc mode (then --detach-only) and in the default mode (then a new collector started); E7 luca-observatoryd run as user nobody with the three capabilities, driven by luca_observatory.client. E1, E2 and E7 run as transient systemd services (systemd-run with User=, AmbientCapabilities=, CapabilityBoundingSet= and NetworkNamespacePath=), the mechanism the installed unit uses; they are not evaluable without systemd.",
+      "criteria": [
+        {"id": "E1", "statement": "Without capabilities the collector exits 2 with a failed snapshot that states the error; the capture holds all 200 echo packets; the correlated summary reports the telemetry as UNAVAILABLE and contains no CORRELATED flow.", "metric": "unprivileged_degrades", "op": "==", "threshold": true},
+        {"id": "E2", "statement": "With only CAP_BPF, CAP_NET_ADMIN and CAP_PERFMON as user nobody the collector attaches, counts the traffic and stops cleanly.", "metric": "minimal_privileges_work", "op": "==", "threshold": true},
+        {"id": "E3", "statement": "With no usable BTF the classifiers still count traffic, the drop program is reported unavailable and the summary lists drop reasons as unsupported.", "metric": "no_btf_degrades", "op": "==", "threshold": true},
+        {"id": "E4", "statement": "Under table pressure flows_not_recorded > 0 and drops_not_keyed > 0 are reported, the flow table holds exactly its capacity, aggregate counters still match the veth within 3 packets, and the summary reports the unattributed packets.", "metric": "pressure_reported", "op": "==", "threshold": true},
+        {"id": "E5", "statement": "When ap0 disappears the collector exits 4 within 3 s with status interface_lost and keeps the counts collected before.", "metric": "interface_loss_reported", "op": "==", "threshold": true},
+        {"id": "E6", "statement": "After SIGKILL the capture still holds all echo packets; in tc mode the filters that survive are removed by --detach-only; a new collector attaches and counts traffic.", "metric": "crash_recovered", "op": "==", "threshold": true},
+        {"id": "E7", "statement": "The service, unprivileged except for the three capabilities, starts and stops a session for the client, which copies the snapshot and records status stopped; with the service stopped the client records unavailable instead of failing.", "metric": "service_end_to_end", "op": "==", "threshold": true}
+      ]
+    }
+  }
+}

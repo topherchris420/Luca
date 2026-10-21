@@ -59,6 +59,17 @@
               </ul>
             </div>
           </div>
+          <div class="accordion">
+            <input id="accordion-observatory" type="checkbox" name="backend-accordion-checkbox" hidden=""/>
+            <label class="accordion-header c-hand" for="accordion-observatory">Kernel Observatory</label>
+            <div class="accordion-body">
+              <ul class="menu menu-nav">
+                <li class="menu-item">
+                  <span @click="$router.push('/observatory')">Status and evidence</span>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
       <div class="shortcuts">

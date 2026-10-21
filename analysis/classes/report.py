@@ -1,6 +1,7 @@
 import weasyprint
 import os
 import json
+import html
 import hashlib
 import re
 import sys
@@ -9,6 +10,26 @@ from weasyprint import HTML
 from pathlib import Path
 from datetime import datetime
 from utils import get_config
+
+
+OBSERVATORY_ROWS = 25
+OBSERVATORY_TEXT = {
+    "observatory_title": "Kernel observatory evidence",
+    "observatory_intro": "Statements below are labelled OBSERVED (measured by one source), CORRELATED "
+                         "(recorded by the kernel and by the capture), INFERRED (a heuristic conclusion) "
+                         "or UNAVAILABLE (telemetry missing).",
+    "observatory_synthetic": "This summary was produced from synthetic example data, not from a measurement.",
+    "observatory_collection": "Kernel collection",
+    "observatory_drop_reasons": "drop reasons",
+    "observatory_coverage": "Capture completeness",
+    "observatory_counts": "{} observation(s) were corroborated by both the kernel and the capture; "
+                          "{} other statement(s) follow.",
+    "observatory_label": "Provenance",
+    "observatory_statement": "Statement",
+    "observatory_more": "{} further statement(s) are in observatory_summary.json.",
+    "observatory_unsupported": "Conclusions this evidence does not support",
+    "observatory_limitations": "Limitations",
+}
 
 
 class Report(object):
@@ -28,6 +49,12 @@ class Report(object):
                 capture_directory, "assets/device.json"))
             self.capinfos = self.read_json(os.path.join(
                 capture_directory, "assets/capinfos.json"))
+        # Optional kernel observatory summary; absent unless it was configured.
+        try:
+            self.observatory = self.read_json(os.path.join(
+                capture_directory, "assets/observatory_summary.json"))
+        except (OSError, ValueError):
+            self.observatory = None
         try:
             with open(os.path.join(self.capture_directory, "capture.pcap"), "rb") as f:
                 self.capture_sha1 = hashlib.sha1(f.read()).hexdigest()
@@ -62,6 +89,7 @@ class Report(object):
         content += self.generate_suspect_conns_block()
         content += self.generate_uncat_conns_block()
         content += self.generate_whitelist_block()
+        content += self.generate_observatory_block()
 
         htmldoc = HTML(string=content, base_url="").write_pdf()
         Path(os.path.join(self.capture_directory,
@@ -199,6 +227,54 @@ class Report(object):
             table += "</tr>"
         table += "</tbody></table>"
         return title + table
+
+    def generate_observatory_block(self):
+        """
+            Generate the kernel observatory section, labelling every
+            statement with its provenance.
+            :return: string
+        """
+        if not isinstance(self.observatory, dict):
+            return ""
+        t = dict(OBSERVATORY_TEXT, **{k: v for k, v in self.template.items() if k.startswith("observatory_")})
+        esc = lambda v: html.escape(str(v)) if v is not None else "--"
+        obs = self.observatory
+        col = obs.get("collection") or {}
+        cov = obs.get("coverage") or {}
+
+        block = "<h2>{}</h2>".format(t["observatory_title"])
+        block += "<p>{}</p>".format(esc(t["observatory_intro"]))
+        if obs.get("synthetic"):
+            block += "<p><strong>{}</strong></p>".format(esc(t["observatory_synthetic"]))
+        block += "<p>{}: {} &middot; {} &middot; {} &middot; {}: {} &middot; Linux {}</p>".format(
+            t["observatory_collection"], esc(col.get("status")), esc(col.get("interface")),
+            esc(col.get("attach_mode")), t["observatory_drop_reasons"], esc(col.get("drop_tracepoint")),
+            esc(col.get("kernel")))
+        if cov:
+            block += "<p>{}: <strong>{}</strong> &mdash; {}</p>".format(
+                t["observatory_coverage"], esc(cov.get("assessment")), esc(cov.get("explanation")))
+
+        rows = [o for o in obs.get("observations") or [] if o.get("category") != "corroborated"]
+        corroborated = (obs.get("counts") or {}).get("corroborated", 0)
+        block += "<p>{}</p>".format(esc(t["observatory_counts"].format(
+            corroborated, sum(v for k, v in (obs.get("counts") or {}).items() if k != "corroborated"))))
+        if rows:
+            block += "<table><thead><tr><th>{}</th><th>{}</th></tr></thead><tbody>".format(
+                t["observatory_label"], t["observatory_statement"])
+            for o in rows[:OBSERVATORY_ROWS]:
+                block += "<tr><td>{}</td><td>{}</td></tr>".format(esc(o.get("label")), esc(o.get("statement")))
+            block += "</tbody></table>"
+            if len(rows) > OBSERVATORY_ROWS:
+                block += "<p>{}</p>".format(esc(t["observatory_more"].format(len(rows) - OBSERVATORY_ROWS)))
+
+        block += "<p><strong>{}</strong></p><ul>".format(t["observatory_unsupported"])
+        for u in obs.get("unsupported") or []:
+            block += "<li><p>{}: {}</p></li>".format(esc(u.get("conclusion")), esc(u.get("reason")))
+        block += "</ul><p><strong>{}</strong></p><ul>".format(t["observatory_limitations"])
+        for l in obs.get("limitations") or []:
+            block += "<li><p>{}</p></li>".format(esc(l))
+        block += "</ul>"
+        return block
 
     def generate_header(self):
         """

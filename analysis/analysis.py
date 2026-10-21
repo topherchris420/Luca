@@ -4,11 +4,17 @@
 from classes.zeekengine import ZeekEngine
 from classes.suricataengine import SuricataEngine
 from classes.report import Report
+from utils import get_config
 from multiprocessing import Process, Manager
 import sys
 import re
 import json
 import os
+
+try:
+    from classes.observatoryengine import observatory_alerts
+except ImportError:  # the optional observatory/ directory is not installed
+    observatory_alerts = None
 
 """
     This file is called by the frontend but the analysis
@@ -44,6 +50,7 @@ def analyze(capture_directory,frontend=False):
             suricata = SuricataEngine(capture_directory)
             suricata.start_suricata()
             alerts["suricata"] = suricata.get_alerts()
+            alerts["suricata_events"] = suricata.get_events()
 
         # Start the engines.
         p1 = Process(target=zeekengine, args=(alerts,))
@@ -56,15 +63,23 @@ def analyze(capture_directory,frontend=False):
         p2.join()
 
         # Some formating and alerts.json writing.
+        report = {"high": [], "moderate": [], "low": []}
+        for alert in (alerts["zeek"] + alerts["suricata"]):
+            if alert["level"] == "High":
+                report["high"].append(alert)
+            if alert["level"] == "Moderate":
+                report["moderate"].append(alert)
+            if alert["level"] == "Low":
+                report["low"].append(alert)
+
+        # Optional kernel observatory evidence. It is only present when
+        # observatory.enabled is set, and only appends KNO-xx alerts.
+        if observatory_alerts is not None:
+            for alert in observatory_alerts(capture_directory, report, get_config(("frontend", "user_lang")),
+                                            get_config(("network", "in")), alerts.get("suricata_events")):
+                report[alert["level"].lower()].append(alert)
+
         with open(os.path.join(capture_directory, "assets/alerts.json"), "w") as f:
-            report = {"high": [], "moderate": [], "low": []}
-            for alert in (alerts["zeek"] + alerts["suricata"]):
-                if alert["level"] == "High":
-                    report["high"].append(alert)
-                if alert["level"] == "Moderate":
-                    report["moderate"].append(alert)
-                if alert["level"] == "Low":
-                    report["low"].append(alert)
             f.write(json.dumps(report, indent=4, separators=(',', ': ')))
 
         # Generate the report

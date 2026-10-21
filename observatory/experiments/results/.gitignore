@@ -1,0 +1,4 @@
+# Experiment results and evidence are produced per run (CI uploads them as
+# artifacts); they are not committed.
+*
+!.gitignore

@@ -1,0 +1,189 @@
+# Kernel observatory: unit tests everywhere, kernel tests on real Linux
+# kernels (the runners' own), the installed systemd service, and the
+# preregistered experiments. The kernel jobs are the only place where the
+# eBPF programs are loaded; their logs and artifacts are the evidence.
+name: observatory
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: observatory-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DEBIAN_FRONTEND: noninteractive
+  BUILD_DEPS: clang llvm libbpf-dev libelf-dev zlib1g-dev make gcc pkg-config git iproute2 iputils-ping
+
+jobs:
+  unit:
+    name: unit tests (Python ${{ matrix.python }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.9", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Unit tests (synthetic fixtures; no kernel involved)
+        run: python -m unittest discover -s observatory/tests -p "test_*.py" -v
+      - name: Offline example is up to date
+        run: |
+          python observatory/examples/make_offline_example.py
+          git diff --exit-code -- observatory/examples web-demo/api/observatory_example.json
+      - name: Web demo API works without kernel privileges
+        run: |
+          pip install -r web-demo/api/requirements.txt
+          cd web-demo/api && python - <<'EOF'
+          from main import app
+          c = app.test_client()
+          for url in ("/api/health", "/api/report", "/api/observatory/example"):
+              r = c.get(url)
+              assert r.status_code == 200, url
+              assert r.get_json()["mode"] == "demo", url
+          assert c.get("/api/observatory/example").get_json()["synthetic"] is True
+          print("demo API ok")
+          EOF
+      - name: Shell syntax
+        run: for f in install.sh update.sh uninstall.sh observatory/scripts/*.sh; do bash -n "$f"; done
+
+  kernel:
+    name: kernel smoke (${{ matrix.os }}, attach ${{ matrix.attach }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm]
+        attach: [auto, tc]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build dependencies
+        run: sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y $BUILD_DEPS
+      - name: Build the collector
+        run: make -C observatory
+      - name: Host report
+        run: |
+          uname -a
+          bash observatory/scripts/check-host.sh || true
+          cd observatory && python3 -m luca_observatory.capabilities --json --build-dir build
+      - name: Linux-only unit tests (service supervision, Unix sockets)
+        run: python3 -m unittest discover -s observatory/tests -p "test_*.py"
+      - name: Kernel smoke test (loads and attaches the eBPF programs)
+        run: sudo python3 observatory/tests/netns_smoke.py --build-dir observatory/build --attach ${{ matrix.attach }} --out smoke-out
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-${{ matrix.os }}-${{ matrix.attach }}
+          path: smoke-out
+          if-no-files-found: ignore
+
+  debian:
+    name: Debian ${{ matrix.release }} toolchain (host kernel)
+    runs-on: ubuntu-24.04
+    container:
+      image: debian:${{ matrix.release }}
+      options: --privileged
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - release: bookworm
+            clang: clang
+          # bullseye's default clang (11) predates the CO-RE type checks
+          - release: bullseye
+            clang: clang-13
+    steps:
+      - name: Packages
+        run: apt-get update && apt-get install -y $BUILD_DEPS ${{ matrix.clang }} python3 ca-certificates procps
+      - uses: actions/checkout@v4
+      - name: Build with the distribution's libbpf (vendored if too old)
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          make -C observatory CLANG=${{ matrix.clang }}
+      - name: Unit tests with the distribution's Python
+        run: python3 -m unittest discover -s observatory/tests -p "test_*.py"
+      - name: Kernel smoke test
+        run: python3 observatory/tests/netns_smoke.py --build-dir observatory/build --out smoke-out
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-debian-${{ matrix.release }}
+          path: smoke-out
+          if-no-files-found: ignore
+
+  service:
+    name: installed systemd service
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Luca's files and an access-point interface
+        run: |
+          sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y python3-yaml iproute2 iputils-ping
+          sudo mkdir -p /usr/share/luca
+          sudo cp -r . /usr/share/luca/
+          # as install.sh leaves it: render-settings refuses a config.yaml root does not own
+          sudo chown -R root:root /usr/share/luca
+          sudo sed -i "s/iface_in/lucaap0/; s/iface_out/eth0/" /usr/share/luca/config.yaml
+          sudo ip netns add lcdev
+          sudo ip link add lucaap0 type veth peer name dev0 netns lcdev
+          sudo ip addr add 192.168.200.1/24 dev lucaap0
+          sudo ip link set lucaap0 up
+          sudo ip -n lcdev addr add 192.168.200.2/24 dev dev0
+          sudo ip -n lcdev link set dev0 up
+      - name: Opt-in installer
+        run: sudo bash /usr/share/luca/observatory/scripts/install-observatory.sh
+      - name: Service end-to-end
+        run: sudo python3 /usr/share/luca/observatory/tests/service_e2e.py --peer-ns lcdev --target 192.168.200.1
+      - name: Service logs
+        if: always()
+        run: |
+          systemctl status luca-observatory --no-pager || true
+          sudo journalctl -u luca-observatory --no-pager | tail -100
+      - name: Uninstall
+        run: |
+          sudo bash /usr/share/luca/observatory/scripts/install-observatory.sh --uninstall
+          if systemctl is-enabled luca-observatory 2>/dev/null; then echo "unit still enabled"; exit 1; fi
+          if id luca-observatory 2>/dev/null; then echo "user still present"; exit 1; fi
+          grep -A1 "^observatory:" /usr/share/luca/config.yaml | grep "enabled: false"
+
+  experiments:
+    name: preregistered experiments (${{ matrix.os }})
+    needs: kernel
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dependencies
+        run: |
+          echo "wireshark-common wireshark-common/install-setuid boolean false" | sudo debconf-set-selections
+          sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y $BUILD_DEPS tshark tcpdump nftables
+      - name: Zeek (optional; criteria that need it are reported not_evaluable without it)
+        continue-on-error: true
+        run: |
+          . /etc/os-release
+          echo "deb http://download.opensuse.org/repositories/security:/zeek/xUbuntu_${VERSION_ID}/ /" | sudo tee /etc/apt/sources.list.d/zeek.list
+          curl -fsSL "https://download.opensuse.org/repositories/security:zeek/xUbuntu_${VERSION_ID}/Release.key" | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/zeek.gpg >/dev/null
+          sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends zeek
+          /opt/zeek/bin/zeek --version
+      - name: Build the collector
+        run: make -C observatory
+      - name: Run the experiments
+        run: sudo python3 observatory/experiments/run_experiments.py --build-dir observatory/build --out experiment-results
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: experiments-${{ matrix.os }}
+          path: experiment-results
+          if-no-files-found: ignore

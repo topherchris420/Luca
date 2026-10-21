@@ -91,6 +91,26 @@
         "SNORT-01": {
             "title": "Suricata rule tiggered: {}",
             "description": "A network detection rule has been triggered. It's likely that your device has been compromised or have some suspect behaviour."
+        },
+        "KNO-01": {
+            "title": "ICMP exchanged with {} outside the local network.",
+            "description": "The kernel recorded {} ICMP packet(s) between the device and {}. Luca's capture filter keeps only TCP and UDP, so this traffic is absent from the capture and from the Zeek and Suricata analysis. ICMP is often benign (reachability tests, error reports); check whether {} is expected."
+        },
+        "KNO-02": {
+            "title": "{} traffic with {}, invisible to the capture.",
+            "description": "The kernel recorded {} packet(s) of {} between the device and {}. Protocols other than TCP, UDP and ICMP are typically tunnels or VPNs (for example IPsec ESP or GRE). Luca's capture filter excludes them, so their content and destinations were not analysed further."
+        },
+        "KNO-03": {
+            "title": "Traffic that appears to be forwarded through the device.",
+            "description": "Inferred, not measured: {} flow(s) left the device with a TTL/hop limit {} below the device's usual initial value ({}). A decremented TTL normally means another host, virtual machine or container sends traffic through the device (for example hotspot tethering). Applications can also set their own TTL, so this is an indication to verify, not a conclusion."
+        },
+        "KNO-04": {
+            "title": "Packets from {}, outside the access point's network.",
+            "description": "The kernel recorded {} packet(s) arriving from the device with source address {}, which is outside the access point's prefixes ({}). This happens with forwarding or misconfigured devices and with address spoofing; which one cannot be determined at this vantage point."
+        },
+        "KNO-05": {
+            "title": "Two different network stacks appear to send traffic through the device.",
+            "description": "Inferred, not measured: the device's flows use initial TTL values from different families ({}). Different operating systems choose different initial TTLs, so this suggests a second system (virtual machine, tethered host) behind the device, or an application setting its own TTL."
         }
     },
     "report": {
@@ -123,6 +143,18 @@
         "high_msg": "Your device seems to be compromised as you have {} high alert(s).",
         "moderate_msg": "You have {} moderate alert(s), your device might be compromised. Please look at them carefully.",
         "low_msg": "You have only {} low alert(s), don't hesitate to check them.",
-        "none_msg": "Everything looks fine, zero alerts. Don't hesitate to check the uncategorized communications, if any."
+        "none_msg": "Everything looks fine, zero alerts. Don't hesitate to check the uncategorized communications, if any.",
+        "observatory_title": "Kernel observatory evidence",
+        "observatory_intro": "Statements below are labelled OBSERVED (measured by one source), CORRELATED (recorded by the kernel and by the capture), INFERRED (a heuristic conclusion) or UNAVAILABLE (telemetry missing).",
+        "observatory_synthetic": "This summary was produced from synthetic example data, not from a measurement.",
+        "observatory_collection": "Kernel collection",
+        "observatory_drop_reasons": "drop reasons",
+        "observatory_coverage": "Capture completeness",
+        "observatory_counts": "{} observation(s) were corroborated by both the kernel and the capture; {} other statement(s) follow.",
+        "observatory_label": "Provenance",
+        "observatory_statement": "Statement",
+        "observatory_more": "{} further statement(s) are in observatory_summary.json.",
+        "observatory_unsupported": "Conclusions this evidence does not support",
+        "observatory_limitations": "Limitations"
     }
 }

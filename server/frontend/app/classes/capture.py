@@ -3,6 +3,7 @@
 
 import subprocess as sp
 from app.utils import terminate_process, read_config
+from app.classes import observatory
 from os import mkdir, path
 from flask import send_file, jsonify
 import datetime
@@ -44,6 +45,10 @@ class Capture(object):
         # Make the capture and the assets directory
         mkdir(self.capture_dir)
         mkdir(self.assets_dir)
+
+        # Optional kernel observatory: started first so that it covers the
+        # whole capture. Does nothing unless observatory.enabled is set.
+        self.observatory = observatory.start(self.capture_token)
 
         try:
             sp.Popen(["tshark",  "-i", self.iface, "-w",
@@ -101,6 +106,8 @@ class Capture(object):
         """
         if terminate_process("tshark"):
             self.create_capinfos()
+            observatory.stop(self.capture_token, self.assets_dir,
+                             getattr(self, "observatory", None))
             return {"status": True,
                     "message": "Capture stopped"}
         else:

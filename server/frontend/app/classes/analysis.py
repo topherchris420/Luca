@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import subprocess as sp
+from app.classes import observatory
 import json
 import sys
 import re
@@ -59,8 +60,13 @@ class Analysis(object):
                 alerts = json.load(f)
 
         if device != {} and alerts != {}:
-            return {"alerts": alerts,
-                    "device": device,
-                    "pcap": pcap}
+            report = {"alerts": alerts,
+                      "device": device,
+                      "pcap": pcap}
+            # Headline of the optional kernel observatory evidence, if any.
+            kernel = observatory.summary(self.token)
+            if kernel is not None:
+                report["observatory"] = kernel
+            return report
         else:
             return {"message": "No report yet"}

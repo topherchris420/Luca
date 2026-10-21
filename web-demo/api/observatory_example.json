@@ -1,0 +1,225 @@
+{
+  "collection": {
+    "attach_mode": "tcx",
+    "drop_tracepoint": "attached",
+    "status": "stopped"
+  },
+  "counts": {
+    "corroborated": 8,
+    "inferred": 1,
+    "missing": 0,
+    "single_source": 3,
+    "uncertain": 0
+  },
+  "coverage": {
+    "assessment": "consistent",
+    "explanation": "no capture loss is detectable between kernel samples; loss within the tolerance or outside the sampled interval cannot be excluded"
+  },
+  "findings": [
+    {
+      "description": "The kernel recorded 6 ICMP packet(s) between the device and 8.8.8.8. Luca's capture filter keeps only TCP and UDP, so this traffic is absent from the capture and from the Zeek and Suricata analysis. ICMP is often benign (reachability tests, error reports); check whether 8.8.8.8 is expected.",
+      "host": "8.8.8.8",
+      "id": "KNO-01",
+      "level": "Low",
+      "provenance": "OBSERVED",
+      "title": "ICMP exchanged with 8.8.8.8 outside the local network."
+    },
+    {
+      "description": "The kernel recorded 3 packet(s) of ESP between the device and 203.0.113.7. Protocols other than TCP, UDP and ICMP are typically tunnels or VPNs (for example IPsec ESP or GRE). Luca's capture filter excludes them, so their content and destinations were not analysed further.",
+      "host": "203.0.113.7",
+      "id": "KNO-02",
+      "level": "Moderate",
+      "provenance": "OBSERVED",
+      "title": "ESP traffic with 203.0.113.7, invisible to the capture."
+    },
+    {
+      "description": "Inferred, not measured: 1 flow(s) left the device with a TTL/hop limit 1 below the device's usual initial value (64). A decremented TTL normally means another host, virtual machine or container sends traffic through the device (for example hotspot tethering). Applications can also set their own TTL, so this is an indication to verify, not a conclusion.",
+      "host": "",
+      "id": "KNO-03",
+      "level": "Low",
+      "provenance": "INFERRED",
+      "title": "Traffic that appears to be forwarded through the device."
+    },
+    {
+      "description": "The kernel recorded 1 packet(s) arriving from the device with source address 10.99.0.5, which is outside the access point's prefixes (192.168.100.0/24). This happens with forwarding or misconfigured devices and with address spoofing; which one cannot be determined at this vantage point.",
+      "host": "10.99.0.5",
+      "id": "KNO-04",
+      "level": "Moderate",
+      "provenance": "OBSERVED",
+      "title": "Packets from 10.99.0.5, outside the access point's network."
+    }
+  ],
+  "labels": {
+    "CORRELATED": 8,
+    "INFERRED": 1,
+    "OBSERVED": 3
+  },
+  "limitations": [
+    "Corroboration means two collection paths inside the same host kernel agree: the TC classifier and the AF_PACKET capture. Both depend on the configured interface being the access point.",
+    "Kernel flows aggregate every packet of a 5-tuple over the collector's lifetime, which starts before and ends after the capture; per-flow counts can exceed the capture's.",
+    "Retransmission counts are passive estimates (data below the highest sequence already seen)."
+  ],
+  "mode": "demo",
+  "note": "SYNTHETIC OFFLINE EXAMPLE. Computed from invented packets in observatory/tests/fixtures.py; no kernel, network or device was observed.",
+  "observations": [
+    {
+      "category": "inferred",
+      "evidence_items": 1,
+      "label": "INFERRED",
+      "reasons": [
+        "heuristic KNO-03: another host or stack forwards traffic through the device"
+      ],
+      "sources": [
+        "observatory.heuristic"
+      ],
+      "statement": "Inferred, not measured: 1 flow(s) left the device with a TTL/hop limit 1 below the device's usual initial value (64). A decremented TTL normally means another host, virtual machine or container sends traffic through the device (for example hotspot tethering). Applications can also set their own TTL, so this is an indication to verify, not a conclusion."
+    },
+    {
+      "category": "single_source",
+      "evidence_items": 1,
+      "label": "OBSERVED",
+      "reasons": [
+        "the capture filter (\"tcp or udp\") excludes ICMP"
+      ],
+      "sources": [
+        "kernel.tc"
+      ],
+      "statement": "ICMP 192.168.100.2 <-> 8.8.8.8: recorded by the kernel only; the capture filter (\"tcp or udp\") excludes ICMP."
+    },
+    {
+      "category": "single_source",
+      "evidence_items": 1,
+      "label": "OBSERVED",
+      "reasons": [
+        "the capture filter (\"tcp or udp\") excludes ESP"
+      ],
+      "sources": [
+        "kernel.tc"
+      ],
+      "statement": "ESP 192.168.100.2 <-> 203.0.113.7: recorded by the kernel only; the capture filter (\"tcp or udp\") excludes ESP."
+    },
+    {
+      "category": "single_source",
+      "evidence_items": 1,
+      "label": "OBSERVED",
+      "reasons": [],
+      "sources": [
+        "kernel.kfree_skb"
+      ],
+      "statement": "The kernel dropped 3 packet(s) arriving from the device (UDP 192.168.100.1:9), reason NO_SOCKET."
+    },
+    {
+      "category": "corroborated",
+      "evidence_items": 2,
+      "label": "CORRELATED",
+      "reasons": [
+        "no capture loss is detectable between kernel samples; loss within the tolerance or outside the sampled interval cannot be excluded"
+      ],
+      "sources": [
+        "kernel.tc",
+        "capture.pcap"
+      ],
+      "statement": "Capture completeness is consistent with the kernel's packet counts for the capture window."
+    },
+    {
+      "category": "corroborated",
+      "evidence_items": 2,
+      "label": "CORRELATED",
+      "reasons": [],
+      "sources": [
+        "kernel.tc",
+        "zeek.conn"
+      ],
+      "statement": "TCP 192.168.100.2:50000 <-> 93.184.216.34:443: recorded by the kernel classifier (10 packets out, 9 in) and by the capture (1 Zeek connection(s), 19 packets)."
+    },
+    {
+      "category": "corroborated",
+      "evidence_items": 2,
+      "label": "CORRELATED",
+      "reasons": [],
+      "sources": [
+        "kernel.tc",
+        "zeek.conn"
+      ],
+      "statement": "UDP 192.168.100.2:40000 <-> 9.9.9.9:53: recorded by the kernel classifier (2 packets out, 2 in) and by the capture (1 Zeek connection(s), 4 packets)."
+    },
+    {
+      "category": "corroborated",
+      "evidence_items": 2,
+      "label": "CORRELATED",
+      "reasons": [],
+      "sources": [
+        "kernel.tc",
+        "zeek.conn"
+      ],
+      "statement": "UDP 192.168.100.2:41000 <-> 198.51.100.9:5353: recorded by the kernel classifier (1 packets out, 0 in) and by the capture (1 Zeek connection(s), 1 packets)."
+    },
+    {
+      "category": "corroborated",
+      "evidence_items": 2,
+      "label": "CORRELATED",
+      "reasons": [],
+      "sources": [
+        "kernel.tc",
+        "zeek.conn"
+      ],
+      "statement": "UDP 10.99.0.5:42000 <-> 198.51.100.10:9999: recorded by the kernel classifier (1 packets out, 0 in) and by the capture (1 Zeek connection(s), 1 packets)."
+    },
+    {
+      "category": "corroborated",
+      "evidence_items": 2,
+      "label": "CORRELATED",
+      "reasons": [],
+      "sources": [
+        "kernel.tc",
+        "zeek.conn"
+      ],
+      "statement": "TCP 192.168.100.2:50001 <-> 192.0.2.80:80: recorded by the kernel classifier (2 packets out, 0 in) and by the capture (1 Zeek connection(s), 2 packets)."
+    },
+    {
+      "category": "corroborated",
+      "evidence_items": 2,
+      "label": "CORRELATED",
+      "reasons": [],
+      "sources": [
+        "kernel.tc",
+        "zeek.conn"
+      ],
+      "statement": "UDP 192.168.100.2:5353 <-> 224.0.0.251:5353: recorded by the kernel classifier (1 packets out, 0 in) and by the capture (1 Zeek connection(s), 1 packets)."
+    },
+    {
+      "category": "corroborated",
+      "evidence_items": 2,
+      "label": "CORRELATED",
+      "reasons": [],
+      "sources": [
+        "luca.alert",
+        "kernel.tc"
+      ],
+      "statement": "Alert IOC-01 (93.184.216.34): the kernel independently recorded 1 flow(s), 19 packet(s), with this host, 1 completed TCP handshake(s). This corroborates that the traffic occurred, not the alert's interpretation."
+    }
+  ],
+  "synthetic": true,
+  "unsupported": [
+    {
+      "conclusion": "Which application or process produced the device's traffic",
+      "reason": "Packets of the inspected device are forwarded by the access point. They are not associated with any local process, and the observatory does not attribute them."
+    },
+    {
+      "conclusion": "What the traffic contained",
+      "reason": "The observatory records headers and counters only, never payload."
+    },
+    {
+      "conclusion": "Whether TCP segments were retransmitted rather than reordered",
+      "reason": "At this vantage point both look alike; retrans_or_reorder counts include both."
+    },
+    {
+      "conclusion": "Whether traffic is malicious",
+      "reason": "Kernel counters describe traffic, not intent. Alerts remain heuristic ratings or indicator matches; kernel corroboration confirms that traffic occurred, not what it meant."
+    },
+    {
+      "conclusion": "Packets the device sent that never reached the access point",
+      "reason": "Radio-level losses happen before the kernel sees a packet and are not observable here."
+    }
+  ]
+}

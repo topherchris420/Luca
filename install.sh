@@ -110,6 +110,28 @@ set_update() {
     fi
 }
 
+set_observatory() {
+    # Optional, Linux-only kernel instrumentation. Its build dependencies
+    # (clang, libbpf...) are installed only when the answer is yes.
+    echo -n "[?] Do you want to install the optional kernel observatory (eBPF, adds clang/libbpf)? [Yes/No] "
+    read answer
+    if [[ "$answer" =~ ^([yY][eE][sS]|[yY])$ ]]
+    then
+        INSTALL_OBSERVATORY=1
+        echo -e "\e[92m    [✔] The kernel observatory will be installed\e[39m"
+    else
+        INSTALL_OBSERVATORY=0
+        echo -e "\e[92m    [✔] Skipping the kernel observatory (observatory.enabled stays false)\e[39m"
+    fi
+}
+
+install_observatory() {
+    if [[ "${INSTALL_OBSERVATORY:-0}" == "1" ]]; then
+        bash /usr/share/luca/observatory/scripts/install-observatory.sh || \
+            echo -e "\e[93m    [✘] Kernel observatory installation failed; Luca works without it\e[39m"
+    fi
+}
+
 create_directory() {
     # Create the Luca directory and move the whole stuff there.
     echo -e "[+] Creating Luca folder under /usr/share/"
@@ -497,6 +519,7 @@ else
     set_credentials
     set_kioskmode
     set_update
+    set_observatory
     check_dependencies
     configure_dnsmask
     configure_dhcpcd
@@ -506,6 +529,7 @@ else
     compile_vuejs
     create_database
     create_services
+    install_observatory
     create_desktop
     change_configs
     feeding_iocs
