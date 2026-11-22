@@ -1,14 +1,14 @@
 # Luca
 
-[![observatory CI](https://github.com/topherchris420/Luca/actions/workflows/observatory.yml/badge.svg)](https://github.com/topherchris420/Luca/actions/workflows/observatory.yml)
-[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE.txt)
-[![Platform: Debian-family Linux](https://img.shields.io/badge/platform-Debian--family%20Linux-lightgrey.svg)](#quick-start)
+Connect a phone, laptop, or IoT device to Luca’s dedicated Wi-Fi network to see what its traffic reveals. Luca analyzes the capture with Zeek and Suricata and returns a report organized by severity. The device needs no installed agent.
 
-**Agentless network inspection for one Wi-Fi device at a time. Luca runs a dedicated access point, records the device's traffic, analyzes it with Zeek and Suricata against indicators of compromise and behavioral heuristics, and produces a severity-graded report.**
+[Quick start](#quick-start) · Debian-family Linux · [Apache 2.0](LICENSE.txt)
 
 ![Luca traffic-analysis architecture](assets/luca-architecture.svg)
 
-Connect a phone, tablet, laptop or IoT device to the Wi-Fi network Luca creates, use it for a while, and get a readable report. Nothing is installed on the device under inspection; the report is built only from what the device sent over the network. Luca is a derivative of [TinyCheck](https://github.com/KasperskyLab/TinyCheck), Kaspersky's open-source network inspection tool, and keeps its Apache 2.0 license.
+*Traffic-analysis workflow for a single connected device.*
+
+Luca is a derivative of [TinyCheck](https://github.com/KasperskyLab/TinyCheck), Kaspersky's open-source network inspection tool, and keeps its Apache 2.0 license.
 
 > Luca is for authorized inspection and research. A match or heuristic alert is evidence to investigate, **not proof that a device is compromised**. Inspect only devices and networks you own or are authorized to assess.
 
