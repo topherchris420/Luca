@@ -1300,6 +1300,8 @@ int main(int argc, char **argv)
 			break;
 	}
 
+	/* Stop map updates before sampling and writing the final snapshot. */
+	detach(&o);
 	if (!exit_code) {
 		take_sample(&o);
 		o.status = "stopped";
